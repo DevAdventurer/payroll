@@ -18,6 +18,7 @@ class MediaController extends Controller
      */
     public function index(Request $request)
     {
+       
         if ($request->ajax()) {
             $datas = Media::orderBy('created_at', 'desc')->select('id','file','type','name','original_name','size');
             $totaldata = $datas->count();
@@ -62,16 +63,41 @@ class MediaController extends Controller
      * @return \Illuminate\Http\Response
      */
         public function store(Request $request) {
+
+            $this->validate($request,[
+                // 'title'=>'required',
+                // 'sub_title'=>'required',
+                // 'button_text'=>'required',
+                // 'button_link'=>'required',
+               // 'image' => 'required|image|mimes:jpeg,png,jpg|max:4000',    
+            ]);
+
             $media = new Media;
+
+            
+            
+
+
             if($request->hasFile('file')){
+
                 $bytes = $request->file('file')->getSize();
+
                 $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
                 for ($i = 0; $bytes > 1024; $i++) $bytes /= 1024;
                 $media_size = round($bytes, 2) . ' ' . $units[$i];
+
+                //return number_format($request->file('file')->getSize() / 1048576,2);
+
                 $media_org = $request->file('file')->getClientOriginalName();
+
                 $media_name = pathinfo($media_org, PATHINFO_FILENAME);
+
+
                 $media_ext = $request->file('file')->getClientOriginalExtension();
+                
                 $media_handle = Str::slug($media_name, '-');
+                
+
                 $media->name = $media_name;
                 $media->original_name = $media_org;
                 $media->type = $media_ext;
@@ -80,18 +106,20 @@ class MediaController extends Controller
             }  
 
             if($media->save()){ 
-                $year = date('Y');
-                $month = date('m');
-                $path = 'media/' . $year . '/' . $month;
-                $media_rename = $media->slug.".".$request->file('file')->getClientOriginalExtension();
-                $image = $request->file('file')->storeAs($path, $media_rename);
                 $storage_type = env('FILESYSTEM_DISK');
+
+                $media_rename = $media->slug.".".$request->file('file')->getClientOriginalExtension();
+                $image = $request->file('file')->storeAs('media', $media_rename);
+                
                 if($storage_type == 's3'){
-                    $media->file = config('printing.media_url').$image;
+                    $media->file = config('appsetting.media_url').$image;
                 }else{
                     $media->file = 'storage/'.$image;
                 }
+                
                 $media->save();
+
+
                 return response()->json(['success'=>true, 'message'=>'File Uploaded Successfully', 'class'=>'success']);
             }
 
@@ -119,12 +147,12 @@ class MediaController extends Controller
     public function update(Request $request, Slider $slider)
     {
         $this->validate($request,[
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:4000',    
-        ]);
-
-        $year = date('Y');
-        $month = date('m');
-        $path = 'media/' . $year . '/' . $month;
+                // 'title'=>'required',
+                // 'sub_title'=>'required',
+                // 'button_text'=>'required',
+                // 'button_link'=>'required',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:4000',    
+            ]);
           
             $slider->title = $request->title;
             $slider->body = $request->description;
@@ -156,7 +184,8 @@ class MediaController extends Controller
     {
         if($media->delete()){
             
-            return response()->json(['message'=>'Admin deleted successfully ...', 'class'=>'success']);  
+            return response()->json(['message'=>'Media deleted successfully ...', 'class'=>'success', 'error'=>false, 'title'=>'Item Deleted!', 'timer'=>2000]);
+
         }
         return response()->json(['message'=>'Whoops, looks like something went wrong ! Try again ...', 'class'=>'error']);
     }
@@ -164,6 +193,14 @@ class MediaController extends Controller
 
 
     public function getAllMediaSingle(Request $request){
+        
+
+        // if ($request->search != '') {
+        //     $medias = Media::orderBy('created_at', 'desc')->where('name', 'like', '%'.$request->search.'%')->select('id', 'file', 'name')->paginate(10);
+        // }
+        // else{
+        //     $medias = Media::orderBy('created_at', 'desc')->select('id', 'file', 'name')->paginate(10);
+        // }
 
         $medias = Media::orderBy('created_at', 'desc')->when($request->has("search"),function($q)use($request){
             return $q->where("name","like","%".$request->get("search")."%");

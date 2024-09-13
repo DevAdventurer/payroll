@@ -1,4 +1,4 @@
-
+<ul id="mediafiles-list" class="flex-wrap p-0 m-0 ok d-flex justify-content-between w-100" style="list-style: none;">
 
 @foreach ($medias as $media)
     <li class="d-inline-block get-all-media">
@@ -9,6 +9,6 @@
     </li>
 @endforeach
 
-
+</ul>
 
 

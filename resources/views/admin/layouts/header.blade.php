@@ -7,10 +7,10 @@
                     <a href="{{ route('admin.dashboard.index') }}" class="logo logo-dark">
                         <span class="logo-sm">
 
-                            <img src="{{asset('admin-assets/images/logo-light.png')}}" alt="" height="17">
+                            <img src="{{asset(get_app_setting('logo')??'assets/images/logo-dark.png')}}" alt="">
                         </span>
                         <span class="logo-lg">
-                            <img src="{{asset('admin-assets/images/logo-light.png')}}" alt="" height="17">
+                            <img src="{{asset(get_app_setting('logo')??'assets/images/logo-dark.png')}}" alt="">
 
                         </span>
                     </a>
@@ -18,15 +18,15 @@
                     <a href="{{ route('admin.dashboard.index') }}" class="logo logo-light">
                         <span class="logo-sm">
 
-                            <img src="{{asset('admin-assets/images/logo-light.png')}}" alt="" height="17">
+                            <img src="{{asset(get_app_setting('logo')??'assets/images/logo-dark.png')}}" alt="">
                         </span>
                         <span class="logo-lg">
-                           <img src="{{asset('admin-assets/images/logo-light.png')}}" alt="" height="17">
+                           <img src="{{asset(get_app_setting('logo')??'assets/images/logo-dark.png')}}" alt="">
                         </span>
                     </a>
                 </div>
 
-                <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
+                <button type="button" class="px-3 btn btn-sm fs-16 header-item vertical-menu-btn topnav-hamburger"
                     id="topnav-hamburger-icon">
                     <span class="hamburger-icon">
                         <span></span>
@@ -81,11 +81,11 @@
                         <!-- item-->
                         <h6 class="dropdown-header">Welcome {{getAdmin('name')}}!</h6>
                         <a class="dropdown-item" href="{{route('admin.profile')}}"><i
-                                class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle mdi mdi-account-circle text-muted fs-16 me-1"></i> <span
                                 class="align-middle">Profile</span></a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ route('admin.logout') }}"><i
-                                class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle mdi mdi-logout text-muted fs-16 me-1"></i> <span
                                 class="align-middle" data-key="t-logout">Logout</span></a>
                     </div>
                 </div>

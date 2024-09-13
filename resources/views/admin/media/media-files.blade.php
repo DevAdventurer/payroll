@@ -1,17 +1,16 @@
 
 <div class="offcanvas mediaselectionlist offcanvas-end" tabindex="-1" id="mediafiles" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header border-bottom">
-        <input type="search" placeholder="Search" name="search" id="mediafilesearch" class="form-control">
+        <input type="text" placeholder="Search" id="mediafilesearch" class="form-control">
+        {{-- <div class="form-group{{ $errors->has('inputname') ? ' has-error' : '' }}">
+            {!! Form::text('inputname', null, ['class' => 'form-control', 'required' => 'required']) !!}
+        </div> --}}
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body p-0 overflow-hidden text-center">
+    <div class="p-0 overflow-hidden text-center offcanvas-body">
         <div data-simplebar class="p-2" style="height: calc(100vh - 116px);padding-bottom: 12px;">
 
-
-
-
-
-            <div class="dropzone mb-3">
+            <div class="mb-3 dropzone">
                 <div class="fallback">
 
                     <input name="file" type="file" multiple="multiple">
@@ -26,22 +25,22 @@
                 </div>
             </div>
 
-            <ul class="d-none list-unstyled mb-0" id="dropzone-preview">
+            <ul class="mb-0 d-none list-unstyled" id="dropzone-preview">
                 <li class="mt-2" id="dropzone-preview-list">
                     <!-- This is used as the file preview template -->
                     <div class="border rounded">
-                        <div class="d-flex p-2">
+                        <div class="p-2 d-flex">
                             <div class="flex-shrink-0 me-3">
-                                <div class="avatar-sm bg-light rounded">
-                                    <img data-dz-thumbnail class="img-fluid rounded d-block" src="#"
+                                <div class="rounded avatar-sm bg-light">
+                                    <img data-dz-thumbnail class="rounded img-fluid d-block" src="#"
                                         alt="Dropzone-Image" />
                                 </div>
 
                             </div>
                             <div class="flex-grow-1">
                                 <div class="pt-1">
-                                    <h5 class="fs-14 mb-1" data-dz-name>&nbsp;</h5>
-                                    <p class="fs-13 text-muted mb-0" data-dz-size></p>
+                                    <h5 class="mb-1 fs-14" data-dz-name>&nbsp;</h5>
+                                    <p class="mb-0 fs-13 text-muted" data-dz-size></p>
                                     <strong class="error text-danger" data-dz-errormessage></strong>
                                 </div>
                             </div>
@@ -54,8 +53,6 @@
             </ul>
 
             <div id="getdata" class="">
-                <ul id="mediafiles-list" class="m-0 p-0 d-flex justify-content-between w-100 flex-wrap" style="list-style: none;">
-                </ul>
             </div>
             
 
@@ -68,8 +65,8 @@
 
         </div>
     </div>
-    <div class="offcanvas-foorter text-center">
-        <button onclick="selectSingleFile()" class="btn btn-success btn-border waves-effect waves-light d-block w-100 p-3 border-none" style="border-radius: 0;">Select File</button>
+    <div class="text-center offcanvas-foorter">
+        <button onclick="selectSingleFile()" class="p-3 border-none btn btn-success btn-border waves-effect waves-light d-block w-100" style="border-radius: 0;">Select File</button>
     </div>
 </div>
 
