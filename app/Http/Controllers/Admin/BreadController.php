@@ -62,8 +62,8 @@ class BreadController extends Controller
     public function store(Request $request)
     {
         
-         $this->validate($request, [
-            'name' => 'required|string'
+        $request->validate([
+            'name' => 'required|string',
         ]);
         
         $slug = Str::slug($request->name, '_');

@@ -25,6 +25,31 @@
                 </div>
             </div>
         </div>
+        {!! Html::form()->route('admin.role.store')->open() !!}
+    <!-- Menu Name -->
+    <div class="form-group">
+        {!! Html::label('name', 'Menu Name', ['class' => 'control-label']) !!}
+        {!! Html::text('name')->class('form-control') !!}
+        <b class="text-danger">{{ $errors->first('name') }}</b>
+    </div>
+
+    <!-- Icon -->
+    <div class="form-group mb-3">
+        {!! Html::label('Display Name', 'display_name', ['class' => 'control-label']) !!}
+        {!! Html::text('display_name')->class('form-control') !!}
+        <b class="text-danger">{{ $errors->first('name') }}</b>
+    </div>
+
+   
+
+    <!-- Submit Button -->
+    <div class="form-group">
+        {!! Html::button('Create')
+            ->type('submit')
+            ->class('btn btn-success')
+            ->style('margin-right: 14px; padding: 7px; width: 71px; background: #dcd7d7;') !!}
+    </div>
+{!! Html::form()->close() !!} 
         <!-- end page title -->
 
 

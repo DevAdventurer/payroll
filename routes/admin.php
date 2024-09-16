@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\CompanyController;
+
 use App\Http\Controllers\Admin\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -128,6 +130,19 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('client/{client}', 'update')->name('client.update')->middleware('can:edit_client');
         Route::delete('client/{client}/delete', 'destroy')->name('client.destroy')->middleware('can:delete_client');
         Route::put('clients/change-status', 'changeStatus')->name('client.changeStatus')->middleware('can:change_status_client');
+    });
+
+    
+   //Company
+    Route::controller(CompanyController::class)->group(function(){
+        Route::match(['get','patch'],'company', 'index')->name('company.index')->middleware('can:browse_company');
+        Route::get('company/create', 'create')->name('company.create')->middleware('can:add_company');
+        Route::get('company/{company}', 'show')->name('company.show')->middleware('can:read_company');
+        Route::get('company/{company}/edit', 'edit')->name('company.edit')->middleware('can:edit_company');
+        Route::post('company', 'store')->name('company.store')->middleware('can:add_company');
+        Route::put('company/{company}', 'update')->name('company.update')->middleware('can:edit_company');
+        Route::delete('company/{company}/delete', 'destroy')->name('company.destroy')->middleware('can:delete_company');
+        Route::put('company/change-status', 'changeStatus')->name('company.changeStatus')->middleware('can:change_status_company');
     });
 
 

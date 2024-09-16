@@ -1,23 +1,14 @@
 @extends('admin.layouts.master')
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
 @push('links')
 <link rel="stylesheet" href="{{asset('admin-assets/libs/dropify/css/dropify.min.css')}}"> 
 @endpush
 
-<<<<<<< HEAD
-@section('main')
-
-=======
-
-
 
 @section('main')
 
 
->>>>>>> origin/main
+
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
@@ -25,20 +16,14 @@
             <h4 class="mb-sm-0">{{Str::title(str_replace('-', ' ', request()->segment(2)))}}</h4>
             @can('add_admin')
             <div class="page-title-right">
-<<<<<<< HEAD
-                <a href="{{ route('admin.'.request()->segment(2).'.create') }}" class="btn-sm btn btn-primary btn-label rounded-pill">
-=======
+
                 <a href="{{ route('admin.'.request()->segment(2).'.create') }}"  class="btn-sm btn btn-primary btn-label rounded-pill">
->>>>>>> origin/main
+
                     <i class="bx bx-plus label-icon align-middle rounded-pill fs-16 me-2"></i>
                     Add {{Str::title(str_replace('-', ' ', request()->segment(2)))}}
                 </a>
             </div>
             @endcan
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
         </div>
     </div>
 </div>
@@ -46,7 +31,7 @@
 
 <div class="row">
     <div class="col-lg-12">
-<<<<<<< HEAD
+
         
 
         {{ html()->form('POST', route('admin.'.request()->segment(2).'.store'))->attribute('files', true)->open() }}
@@ -138,7 +123,6 @@
         {{ html()->form()->close() }}
     </div>
 </div>
-=======
         <div class="card">
             <div class="card-body">
 

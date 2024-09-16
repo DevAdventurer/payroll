@@ -32,18 +32,21 @@
             <div class="col-md-6 col-sm-12">
                 <div class="card">
                     <div class="card-body">
-                       {!! Form::open(['route'=>'admin.bread.store']) !!}
+                        {!! Html::form()->route('admin.bread.store')->open() !!}
 
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                                {!! Form::label('name', 'Name') !!}
-                                {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
-                                <small class="text-danger">{{ $errors->first('name') }}</small>
-                            </div>
+    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }} mb-3">
+        {!! Html::label('name', 'Name') !!}
+        {!! Html::text('name')->class('form-control')->placeholder('Name') !!}
+        <small class="text-danger">{{ $errors->first('name') }}</small>
+    </div>
 
-                            <div class="form-group">
-                                <button class="btn btn-soft-secondary waves-effect waves-light">Create</button>
-                            </div>
-                        {!! Form::close() !!}
+    <div class="form-group ">
+        {!! Html::submit('Create')->class('btn btn-soft-secondary waves-effect waves-light') !!}
+    </div>
+
+{!! Html::form()->close() !!}
+
+                    
                     </div>
                 </div>
             </div><!--end col-->
