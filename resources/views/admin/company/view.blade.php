@@ -38,56 +38,74 @@
                     
                     <div class="card-body">
                         <table class="table align-middle" style="width:100%">
-                            
+
+                            <!-- Company Information -->
                             <tr>
-                                <th width="15%">Avatar</th>
-                                <td>
-                                    <img class="avatar-img img-fluid d-block avatar-xl img-thumbnail rounded img-fluid d-block" src="{{asset($client->avatar)}}">
-                                </td>
+                                <th width="25%">Company Name</th>
+                                <td>{{ $admin->name }}</td>
+                                <th width="25%">Email</th>
+                                <td>{{ $admin->email }}</td>
                             </tr>
-
+                        
                             <tr>
-                                <th>Name</th>
-                                <td>
-                                    {{$client->first_name .' '. $client->last_name}}
-                                </td>
+                                <th>Contact No.</th>
+                                <td>{{ $admin->mobile }}</td>
+                                <th>Owner Name</th>
+                                <td>{{ $adminDetail->owner_name }}</td>
                             </tr>
-
-
-                            <tr>
-                                <th>Email</th>
-                                <td>
-                                    {{$client->email}}
-                                </td>
-                            </tr>
-
-
-
-                            <tr>
-                                <th>Mobile No.</th>
-                                <td>
-                                    {{$client->mobile}}
-                                </td>
-                            </tr>
-
-
+                        
                             <tr>
                                 <th>Address</th>
-                                <td>
-                                    {{$client->address}}
-                                </td>
+                                <td>{{ $adminDetail->address }}</td>
+                                <th>City</th>
+                                <td>{{ $adminDetail->city }}</td>
                             </tr>
-
-
+                        
                             <tr>
-                                <th>Created At</th>
-                                <td>
-                                    {{$client->created_at->format('d F Y')}}
-                                </td>
+                                <th>District</th>
+                                <td>{{ $adminDetail->distt }}</td>
+                                <th>State</th>
+                                <td>{{ $adminDetail->state }}</td>
                             </tr>
-                       
-                       
+                        
+                            <tr>
+                                <th>GST No.</th>
+                                <td>{{ $adminDetail->gst_no }}</td>
+                                <th>PAN No.</th>
+                                <td>{{ $adminDetail->pan_no }}</td>
+                            </tr>
+                        
+                            <tr>
+                                <th>Aadhar No.</th>
+                                <td>{{ $adminDetail->aadhar_no }}</td>
+                                <th>Udyam No.</th>
+                                <td>{{ $adminDetail->udyam_no }}</td>
+                            </tr>
+                        
+                            <tr>
+                                <th>CIN No.</th>
+                                <td>{{ $adminDetail->cin_no }}</td>
+                                <th>EPF No.</th>
+                                <td>{{ $adminDetail->epf_no }}</td>
+                            </tr>
+                        
+                            <tr>
+                                <th>ESIC No.</th>
+                                <td>{{ $adminDetail->esic_no }}</td>
+                                <th>Bank Name</th>
+                                <td>{{ $adminDetail->bank_name }}</td>
+                            </tr>
+                        
+                            <tr>
+                                <th>Account No.</th>
+                                <td>{{ $adminDetail->ac_no }}</td>
+                                <th>IFSC Code</th>
+                                <td>{{ $adminDetail->ifs_code }}</td>
+                            </tr>
+                        
                         </table>
+                        
+                        
                     </div>
                 </div>
             </div><!--end col-->

@@ -41,15 +41,7 @@
                         <h5 class="my-0 text-primary">Company Information</h5>
                     </div>
                     <div class="card-body">
-                        <!-- Role Field -->
-                        <div class="row">
-                            <div class="col-md-12 mb-3 form-group">
-                                {{ html()->hidden('role', 3) }}
-                                @error('role')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                       
 
                         <!-- Existing Fields -->
                         <div class="row">

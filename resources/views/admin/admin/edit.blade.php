@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
     @extends('admin.layouts.master')
     @push('links')
     <link rel="stylesheet" href="{{asset('admin-assets/libs/dropify/css/dropify.min.css')}}"> 

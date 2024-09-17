@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\CompanyController;
-
+use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -132,7 +132,7 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('clients/change-status', 'changeStatus')->name('client.changeStatus')->middleware('can:change_status_client');
     });
 
-    
+
    //Company
     Route::controller(CompanyController::class)->group(function(){
         Route::match(['get','patch'],'company', 'index')->name('company.index')->middleware('can:browse_company');
@@ -143,6 +143,17 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('company/{company}', 'update')->name('company.update')->middleware('can:edit_company');
         Route::delete('company/{company}/delete', 'destroy')->name('company.destroy')->middleware('can:delete_company');
         Route::put('company/change-status', 'changeStatus')->name('company.changeStatus')->middleware('can:change_status_company');
+    });
+    //employee
+    Route::controller(EmployeeController::class)->group(function(){
+        Route::match(['get','patch'],'employee', 'index')->name('employee.index')->middleware('can:browse_employee');
+        Route::get('employee/create', 'create')->name('employee.create')->middleware('can:add_employee');
+        Route::get('employee/{employee}', 'show')->name('employee.show')->middleware('can:read_employee');
+        Route::get('employee/{employee}/edit', 'edit')->name('employee.edit')->middleware('can:edit_employee');
+        Route::post('employee', 'store')->name('employee.store')->middleware('can:add_employee');
+        Route::put('employee/{employee}', 'update')->name('employee.update')->middleware('can:edit_employee');
+        Route::delete('employee/{employee}/delete', 'destroy')->name('employee.destroy')->middleware('can:delete_employee');
+        Route::put('employee/change-status', 'changeStatus')->name('employee.changeStatus')->middleware('can:change_status_employee');
     });
 
 
