@@ -13,12 +13,12 @@
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">{{Str::title(str_replace('-', ' ', request()->segment(2)))}}</h4>
                     @can('add_admin')
                     <div class="page-title-right">
                         <a href="{{ route('admin.'.request()->segment(2).'.create') }}"  class="btn-sm btn btn-primary btn-label rounded-pill">
-                            <i class="bx bx-plus label-icon align-middle rounded-pill fs-16 me-2"></i>
+                            <i class="align-middle bx bx-plus label-icon rounded-pill fs-16 me-2"></i>
                             Add {{Str::title(str_replace('-', ' ', request()->segment(2)))}}
                         </a>
                     </div>
@@ -35,12 +35,14 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    
+
                     <div class="card-body">
-                        <table id="datatable" class="datatable table table-bordered nowrap align-middle" style="width:100%">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table align-middle datatable table-sm border-secondary table-bordered nowrap" style="width:100%">
+
                             <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>Si</th>
                                 <th>Role</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -50,8 +52,9 @@
                                 @endcan
                             </tr>
                         </thead>
-                       
+
                         </table>
+                    </div>
                     </div>
                 </div>
             </div><!--end col-->
@@ -87,20 +90,20 @@ $(document).ready(function(){
             "data": "action",
             render: function(data, type, row) {
                 if (type === 'display') {
-                    var btn = '<div class="dropdown d-inline-block"><button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="ri-more-fill align-middle"></i></button><ul class="dropdown-menu dropdown-menu-end">';
+                    var btn = '<div class="dropdown d-inline-block"><button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="align-middle ri-more-fill"></i></button><ul class="dropdown-menu dropdown-menu-end">';
 
                     @can(['edit_admin','delete_admin','read_admin'])
 
                     @can('read_admin')
-                    btn += '<li><a class="dropdown-item" href="{{ request()->url() }}/' + row['id'] + '"><i class="ri-eye-fill align-bottom me-2 text-muted"></i> View</a></li>';
+                    btn += '<li><a class="dropdown-item" href="{{ request()->url() }}/' + row['id'] + '"><i class="align-bottom ri-eye-fill me-2 text-muted"></i> View</a></li>';
                     @endcan
 
                     @can('edit_admin')
-                        btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['id']+'/edit"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit</a></li>';
+                        btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['id']+'/edit"><i class="align-bottom ri-pencil-fill me-2 text-muted"></i> Edit</a></li>';
                     @endcan
 
                     @can('delete_admin')
-                        btn += '<li><button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['id']+'/delete\')" class="dropdown-item remove-item-btn"><i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete</button></li>';
+                        btn += '<li><button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['id']+'/delete\')" class="dropdown-item remove-item-btn"><i class="align-bottom ri-delete-bin-fill me-2 text-muted"></i> Delete</button></li>';
                     @endcan
 
                     @endcan

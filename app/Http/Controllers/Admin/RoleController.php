@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Role;
 use App\Models\Permission;
-use App\Models\RolePermission;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Models\RolePermission;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Role\RoleCollection;
+
 class RoleController extends Controller
 {
     /**
@@ -63,12 +65,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {   
 
-        $this->validate($request,[
+        $request->validate([
             'name'=>'required|unique:roles,name',
             'display_name'=>'required|unique:roles,name',
         ]);
         $role = new Role;
-        $role->name = $request->name;
+        $role->name = Str::slug($request->name, '_');
         $role->display_name = $request->display_name;
         if($role->save()){
             return redirect()->route('admin.'.request()->segment(2).'.index')->with(['class'=>'success','message'=>'Role Created Successfully.']);

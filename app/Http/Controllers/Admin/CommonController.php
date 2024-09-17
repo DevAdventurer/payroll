@@ -2,176 +2,240 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Client;
-use App\Models\ClientPlate;
-use App\Models\JobType;
-use App\Models\PlateStock;
 use Carbon\Carbon;
+use App\Models\City;
+use App\Models\Admin;
+use App\Models\Client;
+use App\Models\JobType;
+use App\Models\Product;
+use App\Models\District;
+use App\Models\PlateStock;
+use App\Models\ClientPlate;
 use Illuminate\Http\Request;
+use App\Models\ClientProduct;
+use App\Models\MaterialInwardItem;
+use App\Http\Controllers\Controller;
 
 class CommonController extends Controller{
 
-    public function plateSizeStock(Request $request, $id)
+
+    public function productSingle(Request $request){
+        if ($request->ajax()) {
+            $results = Product::where('id', $request->id)->with(['unit'])->first();
+            return response()->json(['datas'=>$results, 'error'=>false]);
+        }
+        return response()->json('oops');
+    }
+
+
+    public function productList(Request $request){
+        if ($request->ajax()) {
+            $page = $request->page;
+            $resultCount = 15;
+
+            $offset = ($page - 1) * $resultCount;
+
+            $name = Product::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                    ->orderBy('created_at', 'asc')
+                                    ->skip($offset)
+                                    ->take($resultCount)
+                                    ->selectRaw('id, name as text')
+                                    ->get();
+
+            $count = Count(Product::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                    ->orderBy('created_at', 'asc')
+                                    ->selectRaw('id, name as text')
+                                    ->get());
+
+            $endCount = $offset + $resultCount;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                  "results" => $name,
+                  "pagination" => array(
+                      "more" => $morePages
+                  )
+              );
+
+            return response()->json($results);
+        }
+        return response()->json('oops');
+    }
+
+
+    public function clientProductList(Request $request){
+        if ($request->ajax()) {
+            $page = $request->page;
+            $resultCount = 15;
+            $offset = ($page - 1) * $resultCount;
+
+            $clent = Admin::find($request->client);
+            if($clent->role_id == 5){
+                $name = ClientProduct::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                        ->orderBy('created_at', 'asc')
+                                        ->skip($offset)
+                                        ->take($resultCount)
+                                        ->selectRaw('id, name as text')
+                                        ->get();
+
+                $count = Count(ClientProduct::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                    ->orderBy('created_at', 'asc')
+                                    ->selectRaw('id, name as text')
+                                    ->get());
+            } else{
+                $name = ClientProduct::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                        ->where('client_id', $request->client)
+                                        ->orderBy('created_at', 'asc')
+                                        ->skip($offset)
+                                        ->take($resultCount)
+                                        ->selectRaw('id, name as text')
+                                        ->get();
+
+                $count = Count(ClientProduct::orderBy('name', 'asc')->where('name', 'LIKE', '%' . $request->term. '%')
+                                    ->where('client_id', $request->client)
+                                    ->orderBy('created_at', 'asc')
+                                    ->selectRaw('id, name as text')
+                                    ->get());
+            }
+
+
+
+            $endCount = $offset + $resultCount;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                  "results" => $name,
+                  "pagination" => array(
+                      "more" => $morePages
+                  )
+              );
+
+            return response()->json($results);
+        }
+        return response()->json('oops');
+    }
+
+
+    public function client(Request $request){
+        if ($request->ajax()) {
+            $page = $request->page;
+            $resultCount = 15;
+
+            $offset = ($page - 1) * $resultCount;
+
+            $name = Client::orderBy('company_name', 'asc')->where('company_name', 'LIKE', '%' . $request->term. '%')
+                                    ->orderBy('created_at', 'asc')
+                                    ->skip($offset)
+                                    ->take($resultCount)
+                                    ->selectRaw('id, company_name as text')
+                                    ->get();
+
+            $count = Count(Client::orderBy('company_name', 'asc')->where('company_name', 'LIKE', '%' . $request->term. '%')
+                                    ->orderBy('created_at', 'asc')
+                                    ->selectRaw('id, company_name as text')
+                                    ->get());
+
+            $endCount = $offset + $resultCount;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                  "results" => $name,
+                  "pagination" => array(
+                      "more" => $morePages
+                  )
+              );
+
+            return response()->json($results);
+        }
+        return response()->json('oops');
+    }
+
+
+
+
+    public function downloadFile($filename)
     {
-        $plate_stock = PlateStock::find($id);
-        if($plate_stock != ''){
-            return response()->json(['error' => false, 'datas' => $plate_stock]);
-        }
-        return response()->json(['error' => true, 'datas' => null]);
-    }
-  
+        $filePath = storage_path('app/' . $filename);
 
-    public function PlateSize(Request $request, $client){
-        if ($request->ajax()) {
-            $page = $request->page;
-            $resultCount = 5;
-    
-            $offset = ($page - 1) * $resultCount;
-    
-            $quality = ClientPlate::where('plate_size', 'LIKE', '%' . $request->term. '%')
-                                    ->where('client_id', $client)
-                                    ->orderBy('created_at', 'asc')
-                                    ->skip($offset)
-                                    ->take($resultCount)
-                                    ->selectRaw('id, plate_size as text')
-                                    ->get();
-    
-            $count = Count(ClientPlate::where('plate_size', 'LIKE', '%' . $request->term. '%')
-                                    ->where('client_id', $client)
-                                    ->orderBy('created_at', 'asc')
-                                    ->selectRaw('id, plate_size as text')
-                                    ->get());
-    
-            $endCount = $offset + $resultCount;
-            $morePages = $count > $endCount;
-    
-            $results = array(
-                  "results" => $quality,
-                  "pagination" => array(
-                      "more" => $morePages
-                  )
-              );
-    
-            return response()->json($results);
+        if (file_exists($filePath)) {
+            return response()->download($filePath);
+        } else {
+            abort(404, 'File not found');
         }
-        return response()->json('oops');
     }
 
 
-       
-    public function clients(Request $request){
+    public function cityList(Request $request, $stateID){
         if ($request->ajax()) {
             $page = $request->page;
-            $resultCount = 5;
-    
+            $resultCount = 15;
+
             $offset = ($page - 1) * $resultCount;
-    
-            $quality = Client::where('company_name', 'LIKE', '%' . $request->term. '%')
-                                    ->orderBy('created_at', 'asc')
-                                    ->skip($offset)
-                                    ->take($resultCount)
-                                    ->selectRaw('id, company_name as text')
-                                    ->get();
-    
-            $count = Count(Client::where('company_name', 'LIKE', '%' . $request->term. '%')
-                                    ->orderBy('created_at', 'asc')
-                                    ->selectRaw('id, company_name as text')
-                                    ->get());
-    
+
+            $name = City::where('name', 'LIKE', '%' . $request->term . '%')
+                    ->where('district_id', $stateID)
+                    ->orderBy('name', 'asc')
+                    ->skip($offset)
+                    ->take($resultCount)
+                    ->selectRaw('id, name as text')
+                    ->get();
+
+            $count = City::where('name', 'LIKE', '%' . $request->term . '%')
+                    ->where('district_id', $stateID)
+                    ->orderBy('name', 'asc')
+                    ->selectRaw('id, name as text')
+                    ->count();
             $endCount = $offset + $resultCount;
             $morePages = $count > $endCount;
-    
-            $results = array(
-                  "results" => $quality,
-                  "pagination" => array(
-                      "more" => $morePages
-                  )
-              );
-    
+
+            $results = [
+                "results" => $name,
+                "pagination" => [
+                    "more" => $morePages
+                ]
+            ];
+
             return response()->json($results);
         }
-        return response()->json('oops');
-    }
-    
 
-
-    public function clientPlateSize(Request $request, $jobType, $client){
-        if ($request->ajax()) {
-            $page = $request->page;
-            $resultCount = 5;
-    
-            $offset = ($page - 1) * $resultCount;
-    
-            $quality = ClientPlate::where('plate_size', 'LIKE', '%' . $request->term. '%')
-                                    ->where('client_id', $client)
-                                    ->whereIn('job_type_id', [$jobType])
-                                    ->orderBy('created_at', 'asc')
-                                    ->skip($offset)
-                                    ->take($resultCount)
-                                    ->selectRaw('id, plate_size as text')
-                                    ->get();
-    
-            $count = Count(ClientPlate::where('plate_size', 'LIKE', '%' . $request->term. '%')
-                                    ->where('client_id', $client)
-                                    ->whereIn('job_type_id', [$jobType])
-                                    ->orderBy('created_at', 'asc')
-                                    ->selectRaw('id, plate_size as text')
-                                    ->get());
-    
-            $endCount = $offset + $resultCount;
-            $morePages = $count > $endCount;
-    
-            $results = array(
-                  "results" => $quality,
-                  "pagination" => array(
-                      "more" => $morePages
-                  )
-              );
-    
-            return response()->json($results);
-        }
         return response()->json('oops');
     }
 
 
 
-
-    public function clientJobType(Request $request, $id){
+    public function districtList(Request $request, $stateID){
         if ($request->ajax()) {
-
-            $job_type_ids = ClientPlate::where('client_id', $id)->pluck('job_type_id');
             $page = $request->page;
-            $resultCount = 5;
-    
+            $resultCount = 15;
+
             $offset = ($page - 1) * $resultCount;
-    
-            $quality = JobType::where('job_type', 'LIKE', '%' . $request->term. '%')
-                                    ->whereIn('id', $job_type_ids)
-                                    ->orderBy('created_at', 'asc')
-                                    ->skip($offset)
-                                    ->take($resultCount)
-                                    ->selectRaw('id, job_type as text')
-                                    ->get();
-    
-            $count = Count(JobType::where('job_type', 'LIKE', '%' . $request->term. '%')
-                                    ->whereIn('id', $job_type_ids)
-                                    ->orderBy('created_at', 'asc')
-                                    ->selectRaw('id, job_type as text')
-                                    ->get());
-    
+
+            $name = District::where('name', 'LIKE', '%' . $request->term . '%')
+                    ->where('state_id', $stateID)
+                    ->orderBy('name', 'asc')
+                    ->skip($offset)
+                    ->take($resultCount)
+                    ->selectRaw('id, name as text')
+                    ->get();
+
+            $count = District::where('name', 'LIKE', '%' . $request->term . '%')
+                    ->where('state_id', $stateID)
+                    ->orderBy('name', 'asc')
+                    ->selectRaw('id, name as text')
+                    ->count();
             $endCount = $offset + $resultCount;
             $morePages = $count > $endCount;
-    
-            $results = array(
-                  "results" => $quality,
-                  "pagination" => array(
-                      "more" => $morePages
-                  )
-              );
-    
+
+            $results = [
+                "results" => $name,
+                "pagination" => [
+                    "more" => $morePages
+                ]
+            ];
+
             return response()->json($results);
         }
+
         return response()->json('oops');
     }
 

@@ -60,9 +60,8 @@ class BreadController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        
-         $this->validate($request, [
+    {   
+        $request->validate([
             'name' => 'required|string'
         ]);
         

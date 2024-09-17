@@ -20,7 +20,7 @@
                     <div class="page-title-right">
                         @can('add_bread')
                         <a href="{{ route('admin.'.request()->segment(2).'.create') }}"  class="btn-sm btn btn-primary btn-label rounded-pill">
-                            <i class="bx bx-plus label-icon align-middle rounded-pill fs-16 me-2"></i>
+                            <i class="align-middle bx bx-plus label-icon rounded-pill fs-16 me-2"></i>
                             Add {{Str::title(str_replace('-', ' ', request()->segment(2)))}}
                         </a>
                         @endcan
@@ -38,7 +38,8 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <table id="datatable" class="datatable table table-bordered nowrap align-middle" style="width:100%">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table align-middle datatable table-sm border-secondary table-bordered nowrap" style="width:100%">
                             <thead>
                                 <tr>
                                   <th>#</th>
@@ -49,6 +50,7 @@
                             </thead>
                        
                         </table>
+                        </div>
                     </div>
                 </div>
             </div><!--end col-->
@@ -68,6 +70,7 @@ $(document).ready(function(){
     var table2 = $('#datatable').DataTable({
      "processing": true,
      "serverSide": true,
+     "ordering": false,
     'ajax': {
     'url': '{{ route('admin.'.request()->segment(2).'.index') }}',
     'data': function(d) {
@@ -84,20 +87,20 @@ $(document).ready(function(){
             "data": "action",
             render: function(data, type, row) {
                 if (type === 'display') {
-                    var btn = '<div class="dropdown d-inline-block"><button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="ri-more-fill align-middle"></i></button><ul class="dropdown-menu dropdown-menu-end">';
+                    var btn = '<div class="dropdown d-inline-block"><button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="align-middle ri-more-fill"></i></button><ul class="dropdown-menu dropdown-menu-end">';
 
                     @can(['edit_bread','delete_bread','read_bread'])
 
                     @can('read_bread')
-                    btn += '<li><a class="dropdown-item" href="{{ request()->url() }}/' + row['slug'] + '"><i class="ri-eye-fill align-bottom me-2 text-muted"></i> View</a></li>';
+                    btn += '<li><a class="dropdown-item" href="{{ request()->url() }}/' + row['slug'] + '"><i class="align-bottom ri-eye-fill me-2 text-muted"></i> View</a></li>';
                     @endcan
 
                     @can('edit_bread')
-                        btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['slug']+'/edit"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit</a></li>';
+                        btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['slug']+'/edit"><i class="align-bottom ri-pencil-fill me-2 text-muted"></i> Edit</a></li>';
                     @endcan
 
                     @can('delete_bread')
-                        btn += '<li><button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['slug']+'/delete\')" class="dropdown-item remove-item-btn"><i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete</button></li>';
+                        btn += '<li><button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['slug']+'/delete\')" class="dropdown-item remove-item-btn"><i class="align-bottom ri-delete-bin-fill me-2 text-muted"></i> Delete</button></li>';
                     @endcan
 
                     @endcan

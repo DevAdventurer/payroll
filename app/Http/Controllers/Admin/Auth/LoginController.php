@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -41,30 +42,43 @@ class LoginController extends Controller
 
     public function login(Request $request)
     { 
-       //return $request->all();
         $request->validate([
             'password' => ['required'],
             'email' => ['required', 'email'],
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
-
-        $remember_me = $request->has('remember_me') ? true : false; 
-
-        if($this->guard()->attempt(['email' => request('email'), 'password' => request('password'),'status' => 1], $remember_me)) {
-        $admin =  Auth::guard('admin')->user();
-            return response()->json(['class' => 'bg-success', 'error' => false, 'message' => 'Login Successfully']);
-            //return redirect()->route('admin.dashboard.index')->with(['class'=>'bg-success','message'=>'Logedin Successfully.']);
-        } 
-
-        if ($admin = Admin::where('email',$request->email)->first()) {
-            if ($admin->status == 0) {
-                return response()->json(['class' => 'bg-danger', 'message' => 'You are not an active person, please contact with Owner.', 'error' => true]);
-                //return redirect()->back()->with(['class'=>'bg-danger','message'=>'You are not an active person, please contact with Owner.']);
-            }        
-        }  
-        return response()->json(['class' => 'bg-danger', 'message' => 'These credentials do not match our records.', 'error'=>true]);
-        //return redirect()->back()->with(['class'=>'bg-danger','message'=>'These credentials do not match our records.']);
-        
-        
+    
+        $remember_me = $request->has('remember_me') ? true : false;
+    
+        $check_status = Admin::where(['email' => $request->email, 'status_id' => 15])->first();
+        if ($check_status) {
+            return response()->json([
+                'class' => 'bg-danger',
+                'message' => 'You are not an active person, please contact the Owner.',
+                'error' => true
+            ]);
+        }
+    
+        if ($this->guard()->attempt([
+                'email' => $request->email, 
+                'password' => $request->password, 
+                'status_id' => 12 
+            ], $remember_me)) {
+    
+            $user = $this->guard()->user();
+    
+            return response()->json([
+                'class' => 'bg-success',
+                'error' => false,
+                'message' => 'Login Successfully'
+            ]);
+        }
+    
+        return response()->json([
+            'class' => 'bg-danger',
+            'message' => 'These credentials do not match our records.',
+            'error' => true
+        ]);
     }
 
 

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Media;
+use Spatie\Image\Image;
+use Illuminate\Http\File;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Media\MediaCollection;
-use App\Models\Media;
-use Illuminate\Http\File;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class MediaController extends Controller
 {
@@ -64,7 +65,7 @@ class MediaController extends Controller
      */
         public function store(Request $request) {
 
-            $this->validate($request,[
+            $request->validate([
                 // 'title'=>'required',
                 // 'sub_title'=>'required',
                 // 'button_text'=>'required',
@@ -119,6 +120,8 @@ class MediaController extends Controller
                 
                 $media->save();
 
+                Image::load($media->file)->optimize()->save('example-optimized.jpg');
+                return $media->file;
 
                 return response()->json(['success'=>true, 'message'=>'File Uploaded Successfully', 'class'=>'success']);
             }

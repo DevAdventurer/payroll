@@ -216,4 +216,25 @@ span.default-image svg {
 [data-layout="vertical"] .nav-link[data-bs-toggle="collapse"][aria-expanded="true"], [data-layout="vertical"] .nav-link[data-bs-toggle="collapse"][aria-expanded="true"] + .menu-dropdown {
     background: #52639c;
 }
+.onFocus{
+    border: 1px solid inherit;
+}
+.form-control:focus, .select2-container--focus .select2-selection--single, .focused{
+    border-color: var(--vz-form-valid-border-color);
+}
+
+.has-error .form-control, .has-error .select2-selection{
+    border-color: var(--vz-form-invalid-border-color);
+}
+.has-error{
+    position: relative;
+}
+small.validate {
+    position: absolute;
+    bottom: -16px;
+    left: 0;
+}
+ul#navbar-nav li:first-child a {
+    padding-left: 0;
+}
 

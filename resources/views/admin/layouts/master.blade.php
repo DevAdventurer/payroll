@@ -28,8 +28,6 @@
     <!--datatable responsive css-->
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
     
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    
      <link href="{{asset('admin-assets/css/app.min.css')}}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{asset('admin-assets/css/custom.min.css')}}" rel="stylesheet" type="text/css" />
@@ -107,10 +105,11 @@
     <script src="{{asset('admin-assets/libs/dropzone/dropzone-min.js')}}"></script>
     <script src="{{asset('admin-assets/js/custom.js')}}"></script>
     <script src="{{asset('admin-assets/js/media.js')}}"></script>
+    <script src="{{asset('admin-assets/js/crudAjax.js')}}"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/toastify-js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.4.1/jquery.jscroll.min.js"></script>
     <script src="{{asset('admin-assets/libs/glightbox/js/glightbox.min.js')}}"></script>
     @if (Session::has('message'))

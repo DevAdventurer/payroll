@@ -8,11 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-
 class Admin extends Authenticatable
 {
     use Notifiable,SoftDeletes;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -24,9 +22,26 @@ class Admin extends Authenticatable
         'name', 'email', 'password',
     ];
 
+    public function media(){
+        return $this->hasOne(Media::class,'id','media_id');
+    }
+
+    public function state(){
+        return $this->hasOne(State::class,'id','state_id');
+    }
+
+    public function district(){
+        return $this->hasOne(District::class,'id','district_id');
+    }
+
+    public function city(){
+        return $this->hasOne(City::class,'id','city_id');
+    }
+
+
     /**
      * The attributes that should be hidden for arrays.
-     *  
+     *
      * @var array
      */
     protected $hidden = [
@@ -36,10 +51,10 @@ class Admin extends Authenticatable
     public function role(){
         return $this->hasOne(Role::class,'id','role_id');
     }
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'role_users');
-    }
+    // public function roles()
+    // {
+    //     return $this->belongsToMany(Role::class, 'role_users');
+    // }
     //  public function hasAccess(string $permissions) :bool
     // {
     //     if($this->role->hasAccess($permissions)) {
@@ -47,38 +62,6 @@ class Admin extends Authenticatable
     //     }
     //     return false;
     // }
-
-
-    // protected function google2faSecret(): Attribute
-    // {
-    //     return new Attribute(
-    //         get: fn ($value) =>  decrypt($value),
-    //         set: fn ($value) =>  encrypt($value),
-    //     );
-    // }
-
-
-
-    // protected function google2faSecret(): Attribute{
-    //     return new Attribute(
-    //         get: function ($value) {
-    //             try {
-    //                 $decryptedValue = decrypt($value);
-    //                 Log::info('Decrypted value:', ['value' => $decryptedValue]);
-    //                 return $decryptedValue;
-    //             } catch (\Exception $e) {
-    //                 Log::error('Decryption failed:', ['error' => $e->getMessage()]);
-    //                 return null;
-    //             }
-    //         },
-    //         set: function ($value) {
-    //             $encryptedValue = encrypt($value);
-    //             Log::info('Encrypted value:', ['value' => $encryptedValue]);
-    //             return $encryptedValue;
-    //         }
-    //     );
-    // }
-
 
 
      public function hasAccess($permissions) :bool
@@ -96,6 +79,6 @@ class Admin extends Authenticatable
     }
 
 
-  
+
 
 }

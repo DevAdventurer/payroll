@@ -4,31 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 class Client extends Model
 {
 
-    use HasFactory,SoftDeletes;
-    use LogsActivity;
-    protected $table = 'clients';
+    use HasFactory;
+    protected $table = 'admins';
+
+    protected static function booted()
+    {
+        static::addGlobalScope('client', function ($query) {
+            $query->where('role_id', '=', 3);
+        });
+        static::creating(function ($client) {
+            $client->role_id = 3;
+        });
+    }
 
     public function media(){
         return $this->hasOne(Media::class,'id','media_id');
     }
 
-     public function plates(){
-        return $this->hasMany(ClientPlate::class);
+    public function state(){
+        return $this->hasOne(State::class,'id','state_id');
     }
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-        ->useLogName('Client')
-        ->setDescriptionForEvent(fn(string $eventName) => "Client has been {$eventName}")
-        ->logOnly(['*']);
-        // Chain fluent methods for configuration options
+    public function district(){
+        return $this->hasOne(District::class,'id','district_id');
     }
+
+    public function city(){
+        return $this->hasOne(City::class,'id','city_id');
+    }
+
+    public function wallet(){
+        return $this->hasOne(Wallet::class,'admin_id','id');
+    }
+
 }

@@ -9,6 +9,7 @@
         "cviebrock/eloquent-sluggable": "^11.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "spatie/image": "^3.7",
         "spatie/laravel-html": "^3.10"
     },
     "require-dev": {

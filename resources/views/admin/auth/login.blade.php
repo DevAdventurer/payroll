@@ -105,13 +105,14 @@
                                                     <input class="form-check-input" type="checkbox" value="" id="auth-remember-check">
                                                     <label class="form-check-label" for="auth-remember-check">Remember me</label>
                                                 </div>
-
+                                                <div class="recaptcha"></div>
+                                                <small class="text-danger">{{ $errors->first('g-recaptcha-response') }}</small>
                                                 <div class="mt-4">
                                                     {{ html()->button('Sign In')
                                                     ->type('button')
                                                     ->class('loginBtn btn btn-success w-100')}}
                                                 </div>
-
+                                                
                                             {{ html()->form()->close() }}
                                         </div>
 
@@ -155,13 +156,12 @@
     <script src="{{asset('admin-assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('admin-assets/libs/feather-icons/feather.min.js')}}"></script>
     <script src="{{asset('admin-assets/js/pages/plugins/lord-icon-2.1.0.js')}}"></script>
-    <script src="{{asset('admin-assets/js/plugins.js')}}"></script>
     <script src="{{asset('admin-assets/js/pages/notifications.init.js')}}"></script>
     <script src="{{asset('admin-assets/js/custom.js')}}"></script>
-    
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/toastify-js'></script>
     <!-- password-addon init -->
     <script src="{{asset('admin-assets/js/pages/password-addon.init.js')}}"></script>
-
+    <script src="https://www.google.com/recaptcha/api.js?render={{ env('GOOGLE_RECAPTCHA_KEY') }}"></script>
     @if (Session::has('message'))
         <script type="text/javascript">
             Toastify({
@@ -180,45 +180,46 @@
 
     <script>
 
-        $('body').on('click', '.loginBtn', function(){
+        $('body').on('click', '.loginBtn', function() {
             var element = this;
             var button = new Button(element);
             button.process();
             clearErrors();
-            var requestData,otpdata,data;
-            formData = new FormData(document.querySelector('#loginform'));
-            $.ajax({
-                type: "POST",
-                enctype: 'multipart/form-data',
-                url:'{{ route('admin.login.post') }}',
-                data: formData,
-                contentType: false,
-                processData: false,
-                cache: false,
-                success:function(response){
-                    Toastify({
-                        text: response.message,
-                        duration: 3000,
-                        close: true,
-                        gravity: "top", // `top` or `bottom`
-                        position: "right", // `left`, `center` or `right`
-                        stopOnFocus: true, // Prevents dismissing of toast on hover
-                        className: response.class,
-
-                    }).showToast();
-                    button.normal();
-                    if(response.error == false){
-                        window.location.href = "{{route('admin.dashboard.index')}}";
-                    }
-                },
-                error:function(error){
-                    button.normal();
-                    handleErrors(error.responseJSON);
-                }
+            grecaptcha.ready(function() {
+                grecaptcha.execute("{{ env('GOOGLE_RECAPTCHA_KEY') }}", {action: 'login'}).then(function(token) {
+                    $('#loginform .recaptcha').html('<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
+                    var formData = new FormData(document.querySelector('#loginform'));
+                    $.ajax({
+                        type: "POST",
+                        enctype: 'multipart/form-data',
+                        url: '{{ route('admin.login.post') }}',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        success: function(response) {
+                            Toastify({
+                                text: response.message,
+                                duration: 3000,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                stopOnFocus: true,
+                                className: response.class,
+                            }).showToast();
+                            button.normal();
+                            if (!response.error) {
+                                window.location.href = "{{ route('admin.dashboard.index') }}";
+                            }
+                        },
+                        error: function(error) {
+                            button.normal();
+                            handleErrors(error.responseJSON);
+                        }
+                    });
+                });
             });
         });
-
-        
     </script>
 </body>
 </html>

@@ -90,7 +90,7 @@
                             <i class="{{ $menu->icon ?? 'fa fa-list' }}"></i>
                             <span data-key="{{ $menu->slug }}">{{ $menu->name }}</span>
                         </a>
-                        <div class="collapse menu-dropdown dd {{ $menu->childs->whereIn('slug',str_replace('-', '_', request()->segment(2)))->count() ? 'show' : '' }}" id="menu-{{ $menu->slug }}">
+                        <div class="collapse menu-dropdown {{ $menu->childs->whereIn('slug',str_replace('-', '_', request()->segment(2)))->count() ? 'show' : '' }}" id="menu-{{ $menu->slug }}">
                             <ul class="nav nav-sm flex-column" aria-expanded="false">
                                 @foreach($menu->childs as $child)
                                     @if(!$child->grands->count())

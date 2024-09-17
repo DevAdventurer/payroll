@@ -98,6 +98,7 @@ class MenuController extends Controller
             foreach ($request->data as $key=>$menu) {
                $parentMenu = Menu::select(['slug', 'ordering','parent'])->where('slug', $menu['id'])->first();
                $parentMenu->parent = NULL;
+               $parentMenu->grand = NULL;
                $parentMenu->ordering = $key;
                $parentMenu->save();
                if(isset($menu['children'])) {
@@ -105,6 +106,7 @@ class MenuController extends Controller
                         $childMenu = Menu::select('slug', 'ordering', 'parent')->where('slug', $childs['id'])->first();
                         $childMenu->ordering = $key2;
                         $childMenu->parent = $parentMenu->slug;
+                        $childMenu->grand = NULL;
                         $childMenu->save();
 
                         if(isset($childs['children'])) {
@@ -112,7 +114,7 @@ class MenuController extends Controller
                                 $grandChildMenu = Menu::select('slug', 'ordering', 'parent')->where('slug', $grand_childs['id'])->first();
                                 $grandChildMenu->ordering = $key3;
                                 $grandChildMenu->grand = $childMenu->slug;
-                                //$grandChildMenu->parent = $grandChildMenu->slug;
+                                $grandChildMenu->parent = NULL;
                                 $grandChildMenu->save();
                             }
                        }
