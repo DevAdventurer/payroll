@@ -5,6 +5,9 @@ use App\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CompanyDtails;
+use App\Models\State;
+use App\Models\City;
+use App\Models\District;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Company;
@@ -50,7 +53,9 @@ class CompanyController extends Controller
     {
         $roles = Role::whereNotIn('id',[1])->select(['id','name'])->get()->pluck('name','id')->toArray();
         // dd($roles);
-        return view('admin.company.create', compact('roles'));
+        $state=State::all();
+        // dd($state);
+        return view('admin.company.create', compact('roles','state'));
     }
 
     /**
@@ -66,12 +71,12 @@ class CompanyController extends Controller
         'type' => 'required|string|max:255',
         'owner_name' => 'required|string|max:255',
         'address' => 'required|string',
-        'city' => 'required|string|max:255',
-        'distt' => 'required|string|max:255',
-        'state' => 'required|string|max:255',
-        'gst_no' => 'required|string|max:255',
-        'pan_no' => 'required|string|max:255',
-        'aadhar_no' => 'required|string|max:255',
+       'city' => 'required|exists:city,id',      
+        'distt' => 'required|exists:district,id',   
+        'state' => 'required|exists:state,id', 
+        'gst_no' => 'required|string|max:255|unique:admin_details,gst_no',
+        'pan_no' => 'required|string|max:255|unique:admin_details,pan_no',
+        'aadhar_no' => 'required|string|max:255|unique:admin_details,aadhar_no',
         'udyam_no' => 'nullable|string|max:255',
         'cin_no' => 'nullable|string|max:255',
         'epf_no' => 'nullable|string|max:255',
@@ -96,9 +101,9 @@ class CompanyController extends Controller
         $adminDetail->type = $request->input('type');
         $adminDetail->owner_name = $request->input('owner_name');
         $adminDetail->address = $request->input('address');
-        $adminDetail->city = $request->input('city');
-        $adminDetail->distt = $request->input('distt');
-        $adminDetail->state = $request->input('state');
+        $adminDetail->city_id = $request->input('city');
+        $adminDetail->district_id = $request->input('distt');
+        $adminDetail->state_id = $request->input('state');
         $adminDetail->gst_no = $request->input('gst_no');
         $adminDetail->pan_no = $request->input('pan_no');
         $adminDetail->aadhar_no = $request->input('aadhar_no');
@@ -135,8 +140,14 @@ class CompanyController extends Controller
      */
     public function edit(string $id)
     {
-        $company = Company::with('details')->find($id);
-        return view('admin.company.edit',compact('company'));
+        $company = Company::with(['details.city', 'details.state', 'details.district'])
+                   ->find($id);
+                   $states = State::pluck('state_title', 'id')->toArray();
+                   $city = City::pluck('name', 'id')->toArray(); 
+                //    dd($city);
+
+                   $district = District::pluck('district_title', 'id')->toArray(); 
+        return view('admin.company.edit',compact('company','states','city','district'));
     }
 
     /**
@@ -151,9 +162,9 @@ class CompanyController extends Controller
         'type' => 'required|string|max:255',
         'owner_name' => 'required|string|max:255',
         'address' => 'required|string',
-        'city' => 'required|string|max:255',
-        'distt' => 'required|string|max:255',
-        'state' => 'required|string|max:255',
+        'city' => 'required|exists:city,id',      
+        'distt' => 'required|exists:district,id',   
+        'state' => 'required|exists:state,id',
         'gst_no' => 'required|string|max:255',
         'pan_no' => 'required|string|max:255',
         'aadhar_no' => 'required|string|max:255',
@@ -185,9 +196,9 @@ class CompanyController extends Controller
         $adminDetail->type = $request->input('type');
         $adminDetail->owner_name = $request->input('owner_name');
         $adminDetail->address = $request->input('address');
-        $adminDetail->city = $request->input('city');
-        $adminDetail->distt = $request->input('distt');
-        $adminDetail->state = $request->input('state');
+        $adminDetail->city_id = $request->input('city');
+        $adminDetail->district_id = $request->input('distt');
+        $adminDetail->state_id = $request->input('state');
         $adminDetail->gst_no = $request->input('gst_no');
         $adminDetail->pan_no = $request->input('pan_no');
         $adminDetail->aadhar_no = $request->input('aadhar_no');

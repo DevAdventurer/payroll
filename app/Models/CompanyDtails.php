@@ -33,6 +33,7 @@ class CompanyDtails extends Model
         'bank_name',
         'ac_no',
         'ifs_code',
+        'city_id', 'state_id', 'district_id',
     ];
 
     /**
@@ -48,6 +49,20 @@ class CompanyDtails extends Model
     public function company()
     {
         return $this->belongsTo(Company::class, 'admin_id', 'id');
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id', 'id');
+    }
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state', 'id');
+    }
+
+    // District Relationship
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'distt', 'id');
     }
    
 }

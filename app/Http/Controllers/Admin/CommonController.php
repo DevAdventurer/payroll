@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\District;
+use App\Models\City;
 use App\Models\ClientPlate;
 use App\Models\JobType;
 use App\Models\PlateStock;
@@ -175,6 +177,17 @@ class CommonController extends Controller{
         return response()->json('oops');
     }
 
-
+    public function getDistricts($stateId)
+{
+    $districts = District::where('state_id', $stateId)->pluck('district_title', 'id');
+    
+    return response()->json($districts);
+}
+public function getCities($districtId)
+{
+    $cities = City::where('districtid', $districtId)->pluck('name', 'id');
+    
+    return response()->json($cities);
+}
 
 }

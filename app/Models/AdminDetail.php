@@ -20,7 +20,7 @@ class AdminDetail extends Model
         'type',
         'owner_name',
         'address',
-        'city',
+        'city','city_id', 'state_id', 'district_id',
         'distt',
         'state',
         'gst_no',

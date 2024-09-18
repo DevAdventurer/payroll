@@ -33,4 +33,5 @@ class Company extends Model
     {
         return $query->where('role_id', 3); // Assuming role_id 3 is for companies
     }
+   
 }

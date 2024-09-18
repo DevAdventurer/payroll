@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\CommonController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -16,5 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get('/get-districts/{stateId}', [CommonController::class, 'getDistricts']);
+Route::get('/get-cities/{districtId}', [CommonController::class, 'getCities']);
 
 require __DIR__.'/auth.php';

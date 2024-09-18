@@ -90,30 +90,38 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('City')->for('city') }}
-                                {{ html()->text('city')->class('form-control')->required()->placeholder('City')->value(old('city')) }}
-                                @error('city')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('District')->for('distt') }}
-                                {{ html()->text('distt')->class('form-control')->required()->placeholder('District')->value(old('distt')) }}
-                                @error('distt')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('State')->for('state') }}
-                                {{ html()->text('state')->class('form-control')->required()->placeholder('State')->value(old('state')) }}
+                                {{ html()->select('state', ['' => 'Select State'] + $state->pluck('state_title', 'id')->toArray())->class('form-control')->required()->attribute('id', 'state') }}
                                 @error('state')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            
+                        </div>
+
+                        <div class="row">
+                          
+                            <div class="col-md-6 mb-3 form-group">
+                                {{ html()->label('District')->for('distt') }}
+                                <select name="distt" id="distt" class="form-control" required>
+                                    <option value="">Select District</option>
+                                </select>
+                                @error('distt')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 form-group">
+                                {{ html()->label('City')->for('city') }}
+                                <select name="city" id="city" class="form-control" required>
+                                    <option value="">Select City</option>
+                                </select>
+                                @error('city')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                           
                         </div>
 
                         <div class="row">
@@ -235,10 +243,59 @@
 
 
 
+
 @endsection
 
 
 
 
 @push('scripts')
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
+<script>
+    $(document).ready(function() {
+        $('#state').change(function() {
+            var stateId = $(this).val();
+            console.log(stateId);
+            if (stateId) {
+                $.ajax({
+                    url: '/get-districts/' + stateId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('#distt').empty();
+                        $('#distt').append('<option value="">Select District</option>');
+                        $.each(data, function(key, value) {
+                            $('#distt').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#distt').empty();
+                $('#distt').append('<option value="">Select District</option>');
+            }
+        });
+        //cities ajax
+        $('#distt').change(function() {
+            var districtId = $(this).val();
+            
+            if (districtId) {
+                $.ajax({
+                    url: '/get-cities/' + districtId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('#city').empty();
+                        $('#city').append('<option value="">Select City</option>');
+                        $.each(data, function(key, value) {
+                            $('#city').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#city').empty();
+                $('#city').append('<option value="">Select City</option>');
+            }
+        });
+    });
+</script>
 @endpush
