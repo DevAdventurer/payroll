@@ -81,7 +81,6 @@ class CompanyController extends Controller
         'ifs_code' => 'required|string|max:255',
     ]);
     // dd($validatedData);
-    // Wrap the code in a transaction block
     DB::beginTransaction();
 
     try {
@@ -91,7 +90,6 @@ class CompanyController extends Controller
         $admin->email = $request->input('email');
         $admin->mobile = $request->input('contact_no');
         $admin->save();
-
         // Create company details
         $adminDetail = new CompanyDtails();
         $adminDetail->admin_id = $admin->id;
@@ -112,18 +110,12 @@ class CompanyController extends Controller
         $adminDetail->ac_no = $request->input('ac_no');
         $adminDetail->ifs_code = $request->input('ifs_code');
         $adminDetail->save();
-
-        // Commit the transaction
         DB::commit();
-
-        // Redirect back with success message
         return redirect()->back()->with(['class'=>'success', 'message'=>'Company Created successfully.']);
 
     } catch (\Exception $e) {
-        // Rollback the transaction in case of error
         DB::rollBack();
-        dd($e->getMessage(), $e->getTrace());
-        // Redirect back with error message
+        // dd($e->getMessage(), $e->getTrace());
         return redirect()->back()->with(['class'=>'danger', 'message'=>'Failed to create Company. Please try again later.']);
     }
 }
@@ -152,7 +144,6 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
 {
-    // Validate the request data
     $validatedData = $request->validate([
         'company_name' => 'required|string|max:255|unique:admins,name,' . $id,
         'email' => 'required|email|max:255|unique:admins,email,' . $id,
@@ -174,8 +165,6 @@ class CompanyController extends Controller
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
     ]);
-
-    // Wrap the code in a transaction block
     DB::beginTransaction();
 
     try {
@@ -189,7 +178,6 @@ class CompanyController extends Controller
         // Update company details
         $adminDetail = CompanyDtails::where('admin_id', $id)->first();
         if (!$adminDetail) {
-            // Create new company details if not found
             $adminDetail = new CompanyDtails();
             $adminDetail->admin_id = $id;
         }
@@ -211,18 +199,13 @@ class CompanyController extends Controller
         $adminDetail->ac_no = $request->input('ac_no');
         $adminDetail->ifs_code = $request->input('ifs_code');
         $adminDetail->save();
-
-        // Commit the transaction
         DB::commit();
 
-        // Redirect back with success message
         return redirect()->back()->with(['class'=>'success', 'message'=>'Company updated successfully.']);
 
     } catch (\Exception $e) {
-        // Rollback the transaction in case of error
         DB::rollBack();
 
-        // Redirect back with error message
         return redirect()->back()->with(['class'=>'danger', 'message'=>'Failed to update company. Please try again later.']);
     }
 }

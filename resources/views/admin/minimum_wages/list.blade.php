@@ -39,12 +39,10 @@
                             <thead class="gridjs-thead">
                             <tr>
                                 <th style="width:12px">Si</th>
-                                <th>Role</th>
-                                <th>Employee Name</th>
-                                <th>Company Name</th>
-                                <th>Email</th>
-                                <th>Mobile No.</th>
-                                @can(['edit_employee','delete_employee', 'read_employee'])
+                                <th>Skill Level</th>
+                                <th>Wages</th>
+                                <th>Status</th>
+                                @can(['edit_minimum_wages','delete_minimum_wages', 'read_minimum_wages'])
                                   <th>Action</th>
                                 @endcan
                             </tr>
@@ -78,33 +76,30 @@ $(document).ready(function(){
     },
     "columns": [
         { "data": "sn" },
-        { "data": "role" },
         { "data": "name" },
-        {"data":"company_name"},
-        { "data": "email" },
-        {"data":"mobile"},
+        { "data": "amount" },
+        {"data":"status"},
+        // { "data": "status" },
         {
             "data": "action",
             render: function(data, type, row) {
                 if (type === 'display') {
                     var btn = '<div class="dropdown d-inline-block"><button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="ri-more-fill align-middle"></i></button><ul class="dropdown-menu dropdown-menu-end">';
 
-                    @can(['edit_employee','delete_employee', 'read_employee'])
+                    @can(['edit_minimum_wages','delete_minimum_wages', 'read_minimum_wages'])
 
-                    @can('edit_employee')
+                    @can('edit_minimum_wages')
                     btn += '<li><a class="dropdown-item" href="{{ request()->url() }}/' + row['id'] + '"><i class="ri-eye-fill align-bottom me-2 text-muted"></i> View</a></li>';
                     @endcan
 
-                    @can('edit_employee')
+                    @can('edit_minimum_wages')
                         btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['id']+'/edit"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit</a></li>';
                     @endcan
-                    
-                    @can('delete_employee')
+
+                    @can('delete_minimum_wages')
                         btn += '<li><button type="button" onclick="deleteAjax(\''+window.location.href+'/'+row['id']+'/delete\')" class="dropdown-item remove-item-btn"><i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete</button></li>';
                     @endcan
-                    @can('edit_employee')
-                        btn+='<li><a class="dropdown-item edit-item-btn" href="'+window.location.href+'/'+row['id']+'/salary"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Salary Details</a></li>';
-                    @endcan
+
                     @endcan
                      btn += '</ul></div>';
                     return btn;
@@ -114,6 +109,7 @@ $(document).ready(function(){
     }]
 
 });
+console.log(table2);
 });
     </script>
 

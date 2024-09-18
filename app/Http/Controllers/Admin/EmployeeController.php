@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\EmployeeSalary;
 use App\Models\Role;
 use App\Models\EmployeeDetails;
 use App\Http\Resources\Admin\Employee\EmployeeCollection;
@@ -209,5 +210,49 @@ class EmployeeController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+   
+    public function salary($id)
+    {
+        // Retrieve the first salary record for the given admin_id
+        $salary = EmployeeSalary::where('admin_id', $id)->first();
+    
+        // If no salary record exists, create a default empty instance (to prevent errors)
+        if (!$salary) {
+            $salary = new EmployeeSalary();
+        }
+    
+        // Return the salary view with the salary data and admin id
+        return view('admin.employee.salary', compact('salary', 'id'));
+    }
+    
+    public function storesalary(Request $request, $id){
+        $request->validate([
+            'basic'      => 'required|numeric|min:0',
+            'designation'      => 'required',
+            'pf_basic'   => 'required|numeric|min:0',
+            'hra'        => 'required|numeric|min:0',
+            'allowance'  => 'required|numeric|min:0',
+            'lwf'        => 'required|numeric|min:0',
+            'deduction'  => 'required|in:PF,ESI,PF+ESI,PDST,NONE',
+            'conveyance' => 'required|numeric|min:0',
+        ]);
+        $employee = Employee::findOrFail($id);
+        EmployeeSalary::updateOrCreate(
+            ['admin_id' => $employee->id], // Find the salary by admin_id or create new one
+            [
+                'basic'      => $request->input('basic'),
+                'designation'      => $request->input('designation'),
+                'pf_basic'   => $request->input('pf_basic'),
+                'hra'        => $request->input('hra'),
+                'allowance'  => $request->input('allowance'),
+                'lwf'        => $request->input('lwf'),
+                'deduction'  => $request->input('deduction'),
+                'conveyance' => $request->input('conveyance')
+            ]
+        );
+
+        // Redirect back with success message
+        return redirect()->back()->with(['class' => 'success', 'message' => 'Salary details updated successfully.']);
     }
 }

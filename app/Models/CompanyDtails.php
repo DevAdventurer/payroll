@@ -40,25 +40,7 @@ class CompanyDtails extends Model
      *
      * @var array
      */
-    // protected $casts = [
-    //     'admin_id' => 'integer',
-    //     'gst_no' => 'string',
-    //     'pan_no' => 'string',
-    //     'aadhar_no' => 'string',
-    //     'udyam_no' => 'string',
-    //     'cin_no' => 'string',
-    //     'epf_no' => 'string',
-    //     'esic_no' => 'string',
-    //     'bank_name' => 'string',
-    //     'ac_no' => 'string',
-    //     'ifs_code' => 'string',
-    //     'address' => 'string',
-    //     'city' => 'string',
-    //     'distt' => 'string',
-    //     'state' => 'string',
-    //     'type' => 'string',
-    //     'owner_name' => 'string',
-    // ];
+
 
     /**
      * Get the admin that owns the details.
