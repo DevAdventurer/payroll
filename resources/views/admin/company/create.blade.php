@@ -46,7 +46,7 @@
                         <!-- Existing Fields -->
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Company Name')->for('company_name') }}
+                                {{ html()->label('Company Name')->for('company_name') }}<span class="text-danger">*</span>
                                 {{ html()->text('company_name')->class('form-control')->required()->placeholder('Company Name')->value(old('company_name')) }}
                                 @error('company_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -54,25 +54,42 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Email')->for('email') }}
+                                {{ html()->label('Email')->for('email') }}<span class="text-danger">*</span>
                                 {{ html()->email('email')->class('form-control')->required()->placeholder('Email')->value(old('email')) }}
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
+@php
+    $companyTypes = [
+    'Private Limited Company (Pvt. Ltd.)',
+    'Public Limited Company (Ltd.)',
+    'One Person Company (OPC)',
+    'Partnership Firm',
+    'Limited Liability Partnership (LLP)',
+    'Sole Proprietorship',
+    'Section 8 Company (Non-Profit Organization)',
+    'Joint Venture Company',
+    'Public Sector Undertaking (PSU) or Government Company',
+    'Holding and Subsidiary Companies',
+];
 
+@endphp
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Type')->for('type') }}
-                                {{ html()->text('type')->class('form-control')->required()->placeholder('Type')->value(old('type')) }}
+                                {{ html()->label('Type')->for('type') }}<span class="text-danger">*</span>
+                                {{ html()->select('type', array_combine($companyTypes, $companyTypes), old('type'))
+                                    ->class('form-control')
+                                    ->required()
+                                    ->placeholder('Select Company Type') }}
                                 @error('type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Owner Name')->for('owner_name') }}
+                                {{ html()->label('Owner Name')->for('owner_name') }}<span class="text-danger">*</span>
                                 {{ html()->text('owner_name')->class('form-control')->required()->placeholder('Owner Name')->value(old('owner_name')) }}
                                 @error('owner_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -82,7 +99,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Contact No.')->for('contact_no') }}
+                                {{ html()->label('Contact No.')->for('contact_no') }}<span class="text-danger">*</span>
                                 {{ html()->text('contact_no')->class('form-control')->required()->placeholder('Contact No.')->value(old('contact_no')) }}
                                 @error('contact_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -90,7 +107,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('State')->for('state') }}
+                                {{ html()->label('State')->for('state') }}<span class="text-danger">*</span>
                                 {{ html()->select('state', ['' => 'Select State'] + $state->pluck('state_title', 'id')->toArray())->class('form-control')->required()->attribute('id', 'state') }}
                                 @error('state')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -102,7 +119,7 @@
                         <div class="row">
                           
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('District')->for('distt') }}
+                                {{ html()->label('District')->for('distt') }}<span class="text-danger">*</span>
                                 <select name="distt" id="distt" class="form-control" required>
                                     <option value="">Select District</option>
                                 </select>
@@ -112,7 +129,7 @@
                             </div>
                             
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('City')->for('city') }}
+                                {{ html()->label('City')->for('city') }}<span class="text-danger">*</span>
                                 <select name="city" id="city" class="form-control" required>
                                     <option value="">Select City</option>
                                 </select>
@@ -126,7 +143,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Address')->for('address') }}
+                                {{ html()->label('Address')->for('address') }}<span class="text-danger">*</span>
                                 {{ html()->textarea('address')->class('form-control')->required()->placeholder('Address')->rows(2)->value(old('address')) }}
                                 @error('address')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -134,7 +151,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('GST No.')->for('gst_no') }}
+                                {{ html()->label('GST No.')->for('gst_no') }}<span class="text-danger">*</span>
                                 {{ html()->text('gst_no')->class('form-control')->required()->placeholder('GST No.')->value(old('gst_no')) }}
                                 @error('gst_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -144,7 +161,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('PAN No.')->for('pan_no') }}
+                                {{ html()->label('PAN No.')->for('pan_no') }}<span class="text-danger">*</span>
                                 {{ html()->text('pan_no')->class('form-control')->required()->placeholder('PAN No.')->value(old('pan_no')) }}
                                 @error('pan_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -152,7 +169,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Aadhar No.')->for('aadhar_no') }}
+                                {{ html()->label('Aadhar No.')->for('aadhar_no') }}<span class="text-danger">*</span>
                                 {{ html()->text('aadhar_no')->class('form-control')->required()->placeholder('Aadhar No.')->value(old('aadhar_no')) }}
                                 @error('aadhar_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -162,16 +179,16 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Udyam No.')->for('udyam_no') }}
-                                {{ html()->text('udyam_no')->class('form-control')->placeholder('Udyam No.')->value(old('udyam_no')) }}
+                                {{ html()->label('Udyam No.')->for('udyam_no') }}<span class="text-danger">*</span>
+                                {{ html()->text('udyam_no')->class('form-control')->placeholder('Enter your 19 digit Udyam Registration number')->value(old('udyam_no')) }}
                                 @error('udyam_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('CIN No.')->for('cin_no') }}
-                                {{ html()->text('cin_no')->class('form-control')->placeholder('CIN No.')->value(old('cin_no')) }}
+                                {{ html()->label('CIN No.')->for('cin_no') }}<span class="text-danger">*</span>
+                                {{ html()->text('cin_no')->class('form-control')->placeholder('Enter your 21 digitCIN No.')->value(old('cin_no')) }}
                                 @error('cin_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -180,16 +197,16 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('EPF No.')->for('epf_no') }}
-                                {{ html()->text('epf_no')->class('form-control')->placeholder('EPF No.')->value(old('epf_no')) }}
+                                {{ html()->label('EPF No.')->for('epf_no') }}<span class="text-danger">*</span>
+                                {{ html()->text('epf_no')->class('form-control')->placeholder('Enter ypur 15 digit EPF No.')->value(old('epf_no')) }}
                                 @error('epf_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('ESIC No.')->for('esic_no') }}
-                                {{ html()->text('esic_no')->class('form-control')->placeholder('ESIC No.')->value(old('esic_no')) }}
+                                {{ html()->label('ESIC No.')->for('esic_no') }}<span class="text-danger">*</span>
+                                {{ html()->text('esic_no')->class('form-control')->placeholder('Enter ypur 17 digit ESIC No.')->value(old('esic_no')) }}
                                 @error('esic_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -198,7 +215,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Bank Name')->for('bank_name') }}
+                                {{ html()->label('Bank Name')->for('bank_name') }}<span class="text-danger">*</span>
                                 {{ html()->text('bank_name')->class('form-control')->required()->placeholder('Bank Name')->value(old('bank_name')) }}
                                 @error('bank_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -206,8 +223,8 @@
                             </div>
 
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('Account No.')->for('ac_no') }}
-                                {{ html()->text('ac_no')->class('form-control')->required()->placeholder('Account No.')->value(old('ac_no')) }}
+                                {{ html()->label('Account No.')->for('ac_no') }}<span class="text-danger">*</span>
+                                {{ html()->text('ac_no')->class('form-control')->required()->placeholder('Enter your Account No.')->value(old('ac_no')) }}
                                 @error('ac_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -216,8 +233,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
-                                {{ html()->label('IFS Code')->for('ifs_code') }}
-                                {{ html()->text('ifs_code')->class('form-control')->required()->placeholder('IFS Code')->value(old('ifs_code')) }}
+                                {{ html()->label('IFSC Code')->for('ifs_code') }}<span class="text-danger">*</span>
+                                {{ html()->text('ifs_code')->class('form-control')->required()->placeholder('Enter ypur IFSC  Code')->value(old('ifs_code')) }}
                                 @error('ifs_code')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

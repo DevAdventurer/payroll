@@ -258,7 +258,42 @@
                                             @enderror
                                         </div>
                                     </div>
-            
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3 form-group">
+                                            {{ html()->label('State')->for('state_id') }}
+                                            {{ html()->select('state', $states, old('state_id', $employee->employeedetail->state_id ?? ''))
+                                                ->class('form-control')
+                                                ->required()
+                                                ->placeholder('Select State') }}
+                                            @error('state_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                      
+                                        <div class="col-md-4 mb-3 form-group">
+                                            {{ html()->label('District')->for('district_id') }}
+                                            {{ html()->select('distt',  ['' => 'Select District'] + $district, old('district_id', $employee->employeedetail->district_id ?? ''))
+                                                ->class('form-control')
+                                                ->required()
+                                                ->attribute('id', 'district') }}
+                                            @error('distt')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3 form-group">
+                                            {{ html()->label('City')->for('city') }}
+                                            {{ html()->select('city', ['' => 'Select City']+ $city, old('city_id', $employee->employeedetail->city_id ?? ''))
+                                                ->class('form-control')
+                                                ->required()
+                                                ->attribute('id', 'city') }}
+                                            @error('city')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        
+                                       
+                                    </div>
                                     <!-- Location and Nationality -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
@@ -316,5 +351,54 @@
 @push('scripts')
 <script src="{{asset('admin-assets/libs/dropify/js/dropify.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('admin-assets/libs/dropify/dropify.js')}}"></script>
-
+<script>
+    $(document).ready(function() {
+        $('#state').change(function() {
+            var stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    url: '/get-districts/' + stateId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('#district').empty();
+                        $('#district').append('<option value="">Select District</option>');
+                        $.each(data, function(key, value) {
+                            $('#district').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                        // Clear city options when state changes
+                        $('#city').empty();
+                        $('#city').append('<option value="">Select City</option>');
+                    }
+                });
+            } else {
+                $('#district').empty();
+                $('#district').append('<option value="">Select District</option>');
+                $('#city').empty();
+                $('#city').append('<option value="">Select City</option>');
+            }
+        });
+    
+        $('#district').change(function() {
+            var districtId = $(this).val();
+            if (districtId) {
+                $.ajax({
+                    url: '/get-cities/' + districtId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('#city').empty();
+                        $('#city').append('<option value="">Select City</option>');
+                        $.each(data, function(key, value) {
+                            $('#city').append('<option value="' + key + '">' + value + '</option>');
+                        });
+                    }
+                });
+            } else {
+                $('#city').empty();
+                $('#city').append('<option value="">Select City</option>');
+            }
+        });
+    });
+    </script>
 @endpush

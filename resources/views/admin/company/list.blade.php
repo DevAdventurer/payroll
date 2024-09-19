@@ -21,6 +21,12 @@
                     Add {{Str::title(str_replace('-', ' ', request()->segment(2)))}}
                 </a>
             </div>
+            <div class="page-title-right">
+                <a href="{{ route('admin.'.request()->segment(2).'.import') }}"  class="btn-sm btn btn-primary btn-label rounded-pill">
+                    <i class="bx bx-plus label-icon align-middle rounded-pill fs-16 me-2"></i>
+                    Import {{Str::title(str_replace('-', ' ', request()->segment(2)))}}
+                </a>
+            </div>
             @endcan
 
         </div>

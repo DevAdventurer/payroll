@@ -47,7 +47,7 @@
                                     <!-- Existing Fields -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Company Name')->for('company_name') }}
+                                            {{ html()->label('Company Name')->for('company_name') }}<span class="text-danger">*</span>
                                             {{ html()->text('company_name')
                                                 ->class('form-control')
                                                 ->required()
@@ -59,7 +59,7 @@
                                         </div>
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Email')->for('email') }}
+                                            {{ html()->label('Email')->for('email') }}<span class="text-danger">*</span>
                                             {{ html()->email('email')
                                                 ->class('form-control')
                                                 ->required()
@@ -70,22 +70,37 @@
                                             @enderror
                                         </div>
                                     </div>
-                
+                                    @php
+    $companyTypes = [
+    'Private Limited Company (Pvt. Ltd.)',
+    'Public Limited Company (Ltd.)',
+    'One Person Company (OPC)',
+    'Partnership Firm',
+    'Limited Liability Partnership (LLP)',
+    'Sole Proprietorship',
+    'Section 8 Company (Non-Profit Organization)',
+    'Joint Venture Company',
+    'Public Sector Undertaking (PSU) or Government Company',
+    'Holding and Subsidiary Companies',
+];
+
+@endphp
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Type')->for('type') }}
-                                            {{ html()->text('type')
+                                            {{ html()->label('Type')->for('type') }}<span class="text-danger">*</span>
+                                            {{ html()->select('type', $companyTypes)
                                                 ->class('form-control')
                                                 ->required()
-                                                ->placeholder('Type')
+                                                ->placeholder('Select Company Type')
                                                 ->value(old('type', $company->details->type ?? '')) }}
                                             @error('type')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                        
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Owner Name')->for('owner_name') }}
+                                            {{ html()->label('Owner Name')->for('owner_name') }}<span class="text-danger">*</span>
                                             {{ html()->text('owner_name')
                                                 ->class('form-control')
                                                 ->required()
@@ -99,7 +114,7 @@
                 
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Contact No.')->for('contact_no') }}
+                                            {{ html()->label('Contact No.')->for('contact_no') }}<span class="text-danger">*</span>
                                             {{ html()->text('contact_no')
                                                 ->class('form-control')
                                                 ->required()
@@ -111,7 +126,7 @@
                                         </div>
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('State')->for('state_id') }}
+                                            {{ html()->label('State')->for('state_id') }}<span class="text-danger">*</span>
                                             {{ html()->select('state', $states, old('state_id', $company->details->state_id ?? ''))
                                                 ->class('form-control')
                                                 ->required()
@@ -126,7 +141,7 @@
                 
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('District')->for('district_id') }}
+                                            {{ html()->label('District')->for('district_id') }}<span class="text-danger">*</span>
                                             {{ html()->select('distt',  ['' => 'Select District'] + $district, old('district_id', $company->details->district_id ?? ''))
                                                 ->class('form-control')
                                                 ->required()
@@ -137,7 +152,7 @@
                                         </div>
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('City')->for('city') }}
+                                            {{ html()->label('City')->for('city') }}<span class="text-danger">*</span>
                                             {{ html()->select('city', ['' => 'Select City']+ $city, old('city_id', $company->details->city_id ?? ''))
                                                 ->class('form-control')
                                                 ->required()
@@ -151,7 +166,7 @@
                 
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Address')->for('address') }}
+                                            {{ html()->label('Address')->for('address') }}<span class="text-danger">*</span>
                                             {{ html()->textarea('address')
                                                 ->class('form-control')
                                                 ->required()
@@ -164,7 +179,7 @@
                                         </div>
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('GST No.')->for('gst_no') }}
+                                            {{ html()->label('GST No.')->for('gst_no') }}<span class="text-danger">*</span>
                                             {{ html()->text('gst_no')
                                                 ->class('form-control')
                                                 ->required()
@@ -175,12 +190,64 @@
                                             @enderror
                                         </div>
                                     </div>
-                
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('PAN No.')->for('pan_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('pan_no')->class('form-control')->required()->placeholder('PAN No.')->value(old('pan_no',$company->details->pan_no ?? '')) }}
+                                            @error('pan_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+            
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('Aadhar No.')->for('aadhar_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('aadhar_no')->class('form-control')->required()->placeholder('Aadhar No.')->value(old('aadhar_no',$company->details->aadhar_no ?? '')) }}
+                                            @error('aadhar_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+            
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('Udyam No.')->for('udyam_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('udyam_no')->class('form-control')->placeholder('Enter your 19 digit Udyam Registration number')->value(old('udyam_no',$company->details->udyam_no ?? '')) }}
+                                            @error('udyam_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+            
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('CIN No.')->for('cin_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('cin_no')->class('form-control')->placeholder('Enter your 21 digitCIN No.')->value(old('cin_no',$company->details->cin_no ?? '')) }}
+                                            @error('cin_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+            
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('EPF No.')->for('epf_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('epf_no')->class('form-control')->placeholder('Enter ypur 15 digit EPF No.')->value(old('epf_no',$company->details->epf_no ?? '')) }}
+                                            @error('epf_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+            
+                                        <div class="col-md-6 mb-3 form-group">
+                                            {{ html()->label('ESIC No.')->for('esic_no') }}<span class="text-danger">*</span>
+                                            {{ html()->text('esic_no')->class('form-control')->placeholder('Enter ypur 17 digit ESIC No.')->value(old('esic_no',$company->details->esic_no ?? '')) }}
+                                            @error('esic_no')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     <!-- Other fields -->
                 
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Bank Name')->for('bank_name') }}
+                                            {{ html()->label('Bank Name')->for('bank_name') }}<span class="text-danger">*</span>
                                             {{ html()->text('bank_name')
                                                 ->class('form-control')
                                                 ->required()
@@ -192,7 +259,7 @@
                                         </div>
                 
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('Account No.')->for('ac_no') }}
+                                            {{ html()->label('Account No.')->for('ac_no') }}<span class="text-danger">*</span>
                                             {{ html()->text('ac_no')
                                                 ->class('form-control')
                                                 ->required()
@@ -206,7 +273,7 @@
                 
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
-                                            {{ html()->label('IFS Code')->for('ifs_code') }}
+                                            {{ html()->label('IFS Code')->for('ifs_code') }}<span class="text-danger">*</span>
                                             {{ html()->text('ifs_code')
                                                 ->class('form-control')
                                                 ->required()

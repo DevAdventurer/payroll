@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\WagesController;
+use App\Http\Controllers\Admin\SalaryController;
+use App\Http\Controllers\Admin\LWFController;
+use App\Http\Controllers\Admin\GratuityController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('admin.guest')->group(function() {
@@ -138,12 +141,25 @@ Route::middleware('admin.auth')->group(function() {
     Route::controller(CompanyController::class)->group(function(){
         Route::match(['get','patch'],'company', 'index')->name('company.index')->middleware('can:browse_company');
         Route::get('company/create', 'create')->name('company.create')->middleware('can:add_company');
+        Route::get('company/import', 'import')->name('company.import')->middleware('can:add_company');
+        Route::post('company/import', 'storeimport')->name('company.import')->middleware('can:add_company');
         Route::get('company/{company}', 'show')->name('company.show')->middleware('can:read_company');
         Route::get('company/{company}/edit', 'edit')->name('company.edit')->middleware('can:edit_company');
         Route::post('company', 'store')->name('company.store')->middleware('can:add_company');
         Route::put('company/{company}', 'update')->name('company.update')->middleware('can:edit_company');
         Route::delete('company/{company}/delete', 'destroy')->name('company.destroy')->middleware('can:delete_company');
         Route::put('company/change-status', 'changeStatus')->name('company.changeStatus')->middleware('can:change_status_company');
+    });
+    //Salary
+    Route::controller(SalaryController::class)->group(function(){
+        Route::match(['get','patch'],'salary', 'index')->name('salary.index')->middleware('can:browse_salary');
+        Route::get('salary/create', 'create')->name('salary.create')->middleware('can:add_salary');
+        Route::get('salary/{salary}', 'show')->name('salary.show')->middleware('can:read_salary');
+        Route::get('salary/{salary}/edit', 'edit')->name('salary.edit')->middleware('can:edit_salary');
+        Route::post('salary', 'store')->name('salary.store')->middleware('can:add_salary');
+        Route::put('salary/{salary}', 'update')->name('salary.update')->middleware('can:edit_salary');
+        Route::delete('salary/{salary}/delete', 'destroy')->name('salary.destroy')->middleware('can:delete_salary');
+        Route::put('salary/change-status', 'changeStatus')->name('salary.changeStatus')->middleware('can:change_status_salary');
     });
     //Wages
     Route::controller(WagesController::class)->group(function(){
@@ -156,6 +172,7 @@ Route::middleware('admin.auth')->group(function() {
         Route::delete('minimum-wages/{minimum_wages}/delete', 'destroy')->name('minimum-wages.destroy')->middleware('can:delete_minimum_wages');
         Route::put('minimum-wages/change-status', 'changeStatus')->name('minimum-wages.changeStatus')->middleware('can:change_status_minimum_wages');
     });
+
     //employee
     Route::controller(EmployeeController::class)->group(function(){
         Route::match(['get','patch'],'employee', 'index')->name('employee.index')->middleware('can:browse_employee');
@@ -164,7 +181,8 @@ Route::middleware('admin.auth')->group(function() {
         Route::get('employee/{employee}/edit', 'edit')->name('employee.edit')->middleware('can:edit_employee');
         Route::get('employee/{employee}/salary', 'salary')->name('employee.salary')->middleware('can:edit_employee');
         Route::post('employee/{employee}/salary', 'storesalary')->name('employee.salary')->middleware('can:edit_employee');
-
+        Route::get('employee/import', 'import')->name('employee.import')->middleware('can:add_employee');
+        Route::post('employee/import', 'storeimport')->name('employee.import')->middleware('can:add_employee');
         Route::post('employee', 'store')->name('employee.store')->middleware('can:add_employee');
         Route::put('employee/{employee}', 'update')->name('employee.update')->middleware('can:edit_employee');
         Route::delete('employee/{employee}/delete', 'destroy')->name('employee.destroy')->middleware('can:delete_employee');

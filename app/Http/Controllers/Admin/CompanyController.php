@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Company;
 use App\Http\Resources\Admin\Company\CompanyCollection;
-
+use App\Imports\CompanyImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyController extends Controller
 {
@@ -74,13 +75,13 @@ class CompanyController extends Controller
        'city' => 'required|exists:city,id',      
         'distt' => 'required|exists:district,id',   
         'state' => 'required|exists:state,id', 
-        'gst_no' => 'required|string|max:255|unique:admin_details,gst_no',
-        'pan_no' => 'required|string|max:255|unique:admin_details,pan_no',
+        'gst_no' => 'required|string|digits:15|unique:admin_details,gst_no',
+        'pan_no' => 'required|string|digits:10|unique:admin_details,pan_no',
         'aadhar_no' => 'required|string|max:255|unique:admin_details,aadhar_no',
-        'udyam_no' => 'nullable|string|max:255',
-        'cin_no' => 'nullable|string|max:255',
-        'epf_no' => 'nullable|string|max:255',
-        'esic_no' => 'nullable|string|max:255',
+        'udyam_no' => 'nullable|string|digits:19',
+        'cin_no' => 'nullable|string|digits:21',
+        'epf_no' => 'nullable|string|digits:15',
+        'esic_no' => 'nullable|string|digits:17',
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
@@ -165,13 +166,13 @@ class CompanyController extends Controller
         'city' => 'required|exists:city,id',      
         'distt' => 'required|exists:district,id',   
         'state' => 'required|exists:state,id',
-        'gst_no' => 'required|string|max:255',
-        'pan_no' => 'required|string|max:255',
-        'aadhar_no' => 'required|string|max:255',
-        'udyam_no' => 'nullable|string|max:255',
-        'cin_no' => 'nullable|string|max:255',
-        'epf_no' => 'nullable|string|max:255',
-        'esic_no' => 'nullable|string|max:255',
+        'gst_no' => 'required|string|digits:15',
+        'pan_no' => 'required|string|digits:10',
+        'aadhar_no' => 'required|string|digits:12',
+        'udyam_no' => 'nullable|string|digits:19',
+        'cin_no' => 'nullable|string|digits:21',
+        'epf_no' => 'nullable|string|digits:15',
+        'esic_no' => 'nullable|string|digits:17',
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
@@ -228,5 +229,28 @@ class CompanyController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function import(){
+        return view('admin.company.import');
+    }
+    public function storeimport(Request $request){
+        $request->validate([
+            'company_excel' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        if ($request->hasFile('company_excel')) {
+            $file = $request->file('company_excel');
+
+            try {
+                Excel::import(new CompanyImport, $file);
+
+                return redirect()->back()->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
+            } catch (\Exception $e) {
+                return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import company data. Please try again later.']);
+            }
+        }
+
+        return redirect()->back()->with(['class' => 'danger', 'message' => 'No file was uploaded.']);
+  
     }
 }

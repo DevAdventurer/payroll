@@ -152,7 +152,12 @@ class EmployeeController extends Controller
         // dd($employee);
         $companies=Company::where('role_id',3)->get();
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
-        return view('admin.employee.edit',compact('employee','companies','roles'));
+       $states = State::pluck('state_title', 'id')->toArray();
+       $city = City::pluck('name', 'id')->toArray(); 
+    //    dd($city);
+
+       $district = District::pluck('district_title', 'id')->toArray(); 
+        return view('admin.employee.edit',compact('employee','companies','roles','states','city','district'));
     }
     public function update(Request $request, $id)
     {
@@ -175,6 +180,9 @@ class EmployeeController extends Controller
             'date_of_relieving' => 'nullable|date',
             'location' => 'required|string|max:255',
             'nationality' => 'required|string|max:255',
+            'city' => 'required|exists:city,id',      
+            'distt' => 'required|exists:district,id',   
+            'state' => 'required|exists:state,id',
         ]);
     
         DB::beginTransaction();
@@ -196,6 +204,9 @@ class EmployeeController extends Controller
                     'email' => $validatedData['email'],
                     'aadhar_no' => $validatedData['aadhar_no'],
                     'ac_no' => $validatedData['bank_account_no'],
+                    'district_id' => $validatedData['distt'],
+                    'city_id' => $validatedData['city'],
+                    'state_id' => $validatedData['state'],
                     'bank_name' => $validatedData['bank_name'],
                     'ifs_code' => $validatedData['ifsc_code'],
                     'esic_no' => $validatedData['esic_no'],
@@ -206,6 +217,7 @@ class EmployeeController extends Controller
                     'nationality' => $validatedData['nationality'],
                 ]
             );
+            
             DB::commit();
             return redirect()->back()->with(['class' => 'success', 'message' => 'Employee updated successfully.']);
     
@@ -267,5 +279,29 @@ class EmployeeController extends Controller
 
         // Redirect back with success message
         return redirect()->back()->with(['class' => 'success', 'message' => 'Salary details updated successfully.']);
+    }
+    public function import(){
+        dd("hello");
+        return view('admin.employee.import');
+    }
+    public function storeimport(Request $request){
+        $request->validate([
+            'company_excel' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        if ($request->hasFile('company_excel')) {
+            $file = $request->file('company_excel');
+
+            try {
+                Excel::import(new CompanyImport, $file);
+
+                return redirect()->back()->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
+            } catch (\Exception $e) {
+                return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import company data. Please try again later.']);
+            }
+        }
+
+        return redirect()->back()->with(['class' => 'danger', 'message' => 'No file was uploaded.']);
+  
     }
 }

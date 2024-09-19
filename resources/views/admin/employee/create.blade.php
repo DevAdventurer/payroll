@@ -195,13 +195,7 @@
                                     </div>
                                     <!-- Date of Birth, Joining, Relieving -->
                                     <div class="row">
-                                        <div class="col-md-4 mb-3 form-group">
-                                            {{ html()->label('Date of Birth')->for('date_of_birth') }}
-                                            {{ html()->date('date_of_birth')->class('form-control')->required()->value(old('date_of_birth')) }}
-                                            @error('date_of_birth')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                                       
                 
                                         <div class="row">
                                             <div class="col-md-4 mb-3 form-group">
