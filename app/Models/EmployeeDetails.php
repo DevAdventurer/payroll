@@ -22,10 +22,25 @@ class EmployeeDetails extends Model
         'date_of_relieving',
         'location',
         'nationality',
+        'city_id', 'state_id', 'district_id',
     ];
 
     public function employee()
 {
     return $this->belongsTo(Employee::class, 'admin_id', 'id');
 }
+public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id', 'id');
+    }
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state_id', 'id');
+    }
+
+    // District Relationship
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id', 'id');
+    }
 }

@@ -11,6 +11,9 @@ use App\Models\Role;
 use App\Models\EmployeeDetails;
 use App\Http\Resources\Admin\Employee\EmployeeCollection;
 use Illuminate\Support\Facades\DB;
+use App\Models\State;
+use App\Models\City;
+use App\Models\District;
 class EmployeeController extends Controller
 {
     /**
@@ -54,8 +57,8 @@ class EmployeeController extends Controller
     {
         $companies=Company::where('role_id',3)->get();
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
-
-        return view('admin.employee.create',compact('companies','roles'));
+       $state=State::all();
+        return view('admin.employee.create',compact('companies','roles','state'));
     }
 
     /**
@@ -81,6 +84,9 @@ class EmployeeController extends Controller
             'date_of_joining' => 'required|date',
             'date_of_relieving' => 'nullable|date',
             'location' => 'required|string|max:255',
+            'city' => 'required|exists:city,id',      
+            'distt' => 'required|exists:district,id',   
+            'state' => 'required|exists:state,id', 
             'nationality' => 'required|string|max:255',
         ]);
     
@@ -95,6 +101,9 @@ class EmployeeController extends Controller
                 'date_of_birth' => $validatedData['date_of_birth'],
                 'company_id' => $validatedData['company_id'],
             ]);
+            // $adminDetail->city_id = $request->input('city');
+            // $adminDetail->district_id = $request->input('distt');
+            // $adminDetail->state_id = $request->input('state');
             $employeeDetails = EmployeeDetails::create([
                 'admin_id' => $employee->id,  
                 'father_or_husband_name' => $validatedData['father_or_husband_name'],
@@ -108,6 +117,9 @@ class EmployeeController extends Controller
                 'date_of_joining' => $validatedData['date_of_joining'],
                 'date_of_relieving' => $validatedData['date_of_relieving'],
                 'location' => $validatedData['location'],
+                'city_id'=>$validatedData['city'],
+                'state_id'=>$validatedData['state'],
+                'district_id'=>$validatedData['distt'],
                 'nationality' => $validatedData['nationality'],
             ]);
             DB::commit();
@@ -136,7 +148,8 @@ class EmployeeController extends Controller
      */
     public function edit(string $id)
     {
-        $employee = Employee::with('company','employeedetail')->find($id);
+        $employee = Employee::with('company','employeedetail.city','employeedetail.state','employeedetail.district')->find($id);
+        // dd($employee);
         $companies=Company::where('role_id',3)->get();
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
         return view('admin.employee.edit',compact('employee','companies','roles'));
