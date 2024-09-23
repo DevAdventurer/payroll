@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\DB;
 use App\Models\State;
 use App\Models\City;
 use App\Models\District;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EmployeeDetailsImport;
+use App\Models\Tempemployeedetails;
+use App\Models\Wage;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon; // Make sure Carbon is imported
+
+
+
 class EmployeeController extends Controller
 {
     /**
@@ -21,7 +31,9 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        
+     
+             // Example input
+            
         if ($request->wantsJson()) {
        
             $datas = Employee::with(['company' => function ($query) {
@@ -58,7 +70,9 @@ class EmployeeController extends Controller
         $companies=Company::where('role_id',3)->get();
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
        $state=State::all();
-        return view('admin.employee.create',compact('companies','roles','state'));
+       $skills=Wage::all();
+
+        return view('admin.employee.create',compact('companies','roles','state','skills'));
     }
 
     /**
@@ -82,32 +96,29 @@ class EmployeeController extends Controller
             'pf_no' => 'nullable|string|max:20',
             'date_of_birth' => 'required|date',
             'date_of_joining' => 'required|date',
-            'date_of_relieving' => 'nullable|date',
+            'skill' => 'required',
             'location' => 'required|string|max:255',
             'city' => 'required|exists:city,id',      
             'distt' => 'required|exists:district,id',   
             'state' => 'required|exists:state,id', 
-            'nationality' => 'required|string|max:255',
+            
         ]);
-    
+        // dd($validatedData);
         DB::beginTransaction();
 
         try {
             $employee = Employee::create([
                 'name' => $validatedData['employee_name'],
-                'email'=>'abc@gmail.com',
+                'email'=> $validatedData['email'],
+                'wages_id'=>$validatedData['skill'],
                 'mobile' => $validatedData['mobile'],
                 'gender' => $validatedData['gender'],
                 'date_of_birth' => $validatedData['date_of_birth'],
                 'company_id' => $validatedData['company_id'],
             ]);
-            // $adminDetail->city_id = $request->input('city');
-            // $adminDetail->district_id = $request->input('distt');
-            // $adminDetail->state_id = $request->input('state');
             $employeeDetails = EmployeeDetails::create([
                 'admin_id' => $employee->id,  
                 'father_or_husband_name' => $validatedData['father_or_husband_name'],
-                'email' => $validatedData['email'],
                 'aadhar_no' => $validatedData['aadhar_no'],
                 'ac_no' => $validatedData['bank_account_no'],
                 'bank_name' => $validatedData['bank_name'],
@@ -115,19 +126,18 @@ class EmployeeController extends Controller
                 'esic_no' => $validatedData['esic_no'],
                 'epf_no' => $validatedData['pf_no'],
                 'date_of_joining' => $validatedData['date_of_joining'],
-                'date_of_relieving' => $validatedData['date_of_relieving'],
                 'location' => $validatedData['location'],
                 'city_id'=>$validatedData['city'],
                 'state_id'=>$validatedData['state'],
                 'district_id'=>$validatedData['distt'],
-                'nationality' => $validatedData['nationality'],
             ]);
             DB::commit();
             return redirect()->back()->with(['class' => 'success', 'message' => 'Employee created successfully.']);
     
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Error creating employee: ' . $e->getMessage());
+            Log::error('Error creating employee: ' . $e->getMessage());
+           
             return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to create employee. Please try again later.']);
         }
     }
@@ -138,7 +148,6 @@ class EmployeeController extends Controller
     public function show(string $id)
     {
         $employee = Employee::with('company')->findOrFail($id);
-        // dd($employee);
         $employeeDetails = EmployeeDetails::where('admin_id', $employee->id)->first();
         return view('admin.employee.view',compact('employee', 'employeeDetails'));
     }
@@ -154,8 +163,6 @@ class EmployeeController extends Controller
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
        $states = State::pluck('state_title', 'id')->toArray();
        $city = City::pluck('name', 'id')->toArray(); 
-    //    dd($city);
-
        $district = District::pluck('district_title', 'id')->toArray(); 
         return view('admin.employee.edit',compact('employee','companies','roles','states','city','district'));
     }
@@ -223,7 +230,7 @@ class EmployeeController extends Controller
     
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Error updating employee: ' . $e->getMessage());
+            Log::error('Error updating employee: ' . $e->getMessage());
             return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to update employee. Please try again later.']);
         }
     }
@@ -239,15 +246,10 @@ class EmployeeController extends Controller
    
     public function salary($id)
     {
-        // Retrieve the first salary record for the given admin_id
         $salary = EmployeeSalary::where('admin_id', $id)->first();
-    
-        // If no salary record exists, create a default empty instance (to prevent errors)
         if (!$salary) {
             $salary = new EmployeeSalary();
         }
-    
-        // Return the salary view with the salary data and admin id
         return view('admin.employee.salary', compact('salary', 'id'));
     }
     
@@ -264,7 +266,7 @@ class EmployeeController extends Controller
         ]);
         $employee = Employee::findOrFail($id);
         EmployeeSalary::updateOrCreate(
-            ['admin_id' => $employee->id], // Find the salary by admin_id or create new one
+            ['admin_id' => $employee->id], 
             [
                 'basic'      => $request->input('basic'),
                 'designation'      => $request->input('designation'),
@@ -276,32 +278,122 @@ class EmployeeController extends Controller
                 'conveyance' => $request->input('conveyance')
             ]
         );
-
-        // Redirect back with success message
         return redirect()->back()->with(['class' => 'success', 'message' => 'Salary details updated successfully.']);
     }
     public function import(){
-        dd("hello");
-        return view('admin.employee.import');
+        $companies = Company::where('entity_type', 'company')->get();
+        return view('admin.employee.import', compact('companies'));
     }
+
     public function storeimport(Request $request){
         $request->validate([
-            'company_excel' => 'required|file|mimes:xlsx,xls,csv|max:2048',
-        ]);
+        'company_id' => 'required|exists:admins,id',
+        'company_excel' => 'required|file|mimes:xlsx,xls,csv',
+    ]);
 
         if ($request->hasFile('company_excel')) {
             $file = $request->file('company_excel');
 
             try {
-                Excel::import(new CompanyImport, $file);
-
-                return redirect()->back()->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
+                TempEmployeeDetails::truncate();
+                Excel::import(new EmployeeDetailsImport($request->company_id), $file);
+                return redirect()->route('admin.employee.uploaded_data.excell', ['employee' => $request->company_id])->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
             } catch (\Exception $e) {
-                return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import company data. Please try again later.']);
+                return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import Employee data. Please try again later.']);
             }
         }
 
         return redirect()->back()->with(['class' => 'danger', 'message' => 'No file was uploaded.']);
   
     }
+    public function showUploadedData( $employee)
+    {
+            $employees = TempEmployeeDetails::where('company_id', $employee)->get();
+        $aadharCounts = $employees->groupBy('aadhar_no')->map(function ($group) {
+            return $group->count();
+        });
+        $repeatedAadhars = $aadharCounts->filter(function ($count) {
+            return $count > 1; 
+        });
+        $aadharNos = $employees->pluck('aadhar_no')->toArray();
+        $existingAadhars = EmployeeDetails::whereIn('aadhar_no', $aadharNos)->pluck('aadhar_no')->toArray();
+        return view('admin.employee.uploadview', compact('employees', 'repeatedAadhars', 'existingAadhars','employee'));
+    }
+
+   
+
+
+    public function verify(Request $request)
+    {
+       
+
+        $company_id = $request->input('company_id');
+        $employeeData = TempEmployeeDetails::where('company_id', $company_id)->get();
+        // dd($employeeData);
+        foreach ($employeeData as $employee) {
+            // dd($employee['aadhar_no']);
+            DB::enableQueryLog();
+            // Check for existing Aadhar number
+            $existingEmployee = EmployeeDetails::where('aadhar_no', $employee['aadhar_no'])->first();
+            if ($existingEmployee) {
+                continue; // Skip if employee already exists
+                // dd($existingEmployee);
+            }
+    
+            // Check for duplicates in the current upload
+            $isRepeated = Employee::where('company_id', $company_id)
+                                             ->where('email', $employee['email'])
+                                             ->count() > 1;
+            if ($isRepeated) {
+                continue; // Skip repeated records
+            }
+    
+            
+            $state_id = getStateId($employee['state']);
+            $district_id = getDistrictId($employee['district'], $state_id);
+            $city_id = getCityId($employee['city'], $district_id);
+    
+            // Prepare date fields using Carbon
+            $date_of_birth = Carbon::createFromFormat('Y-m-d', $employee['date_of_birth']);
+            $date_of_joining = Carbon::createFromFormat('Y-m-d', $employee['date_of_joining']);
+            $date_of_relieving = Carbon::createFromFormat('Y-m-d', $employee['date_of_relieving']);
+    
+            $newEmployee=new Employee();
+            $newEmployee->name=$employee['employee_name'];
+            $newEmployee->email=$employee['email'];
+            $newEmployee->mobile=$employee['mobile'];
+            $newEmployee->gender=$employee['gender'];
+            $newEmployee->date_of_birth=$employee['date_of_birth'];
+            $newEmployee->company_id=$company_id;
+            $newEmployee->save();
+            
+            $newEmployeeDetails = new EmployeeDetails();
+            $newEmployeeDetails->admin_id = $newEmployee->id;
+            $newEmployeeDetails->father_or_husband_name = $employee['father_or_husband_name'];
+            $newEmployeeDetails->aadhar_no = $employee['aadhar_no'];
+            $newEmployeeDetails->ac_no = $employee['bank_account_no'];
+            $newEmployeeDetails->bank_name = $employee['bank_name'];
+            $newEmployeeDetails->ifs_code = $employee['ifsc_code'];
+            $newEmployeeDetails->esic_no = $employee['esic_no'];
+            $newEmployeeDetails->epf_no = $employee['pf_no'];
+            $newEmployeeDetails->date_of_joining = $date_of_joining; // Ensure this is in the correct format
+            $newEmployeeDetails->date_of_relieving = $date_of_relieving; // Ensure this is in the correct format
+            $newEmployeeDetails->location = $employee['location'];
+            $newEmployeeDetails->nationality = $employee['nationality'];
+            $newEmployeeDetails->state_id = $state_id;
+            $newEmployeeDetails->district_id = $district_id;
+            $newEmployeeDetails->city_id = $city_id;
+            
+            // Save the new EmployeeDetails instance
+            $newEmployeeDetails->save();
+          
+
+        }
+        TempEmployeeDetails::truncate();
+        return redirect()->route('admin.employee.index')->with('success', 'Employee data verified and saved successfully.');
+    }
 }
+
+
+
+

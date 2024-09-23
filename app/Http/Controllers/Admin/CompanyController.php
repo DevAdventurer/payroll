@@ -5,6 +5,7 @@ use App\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CompanyDtails;
+use App\Models\Temp_companydetail;
 use App\Models\State;
 use App\Models\City;
 use App\Models\District;
@@ -75,13 +76,13 @@ class CompanyController extends Controller
        'city' => 'required|exists:city,id',      
         'distt' => 'required|exists:district,id',   
         'state' => 'required|exists:state,id', 
-        'gst_no' => 'required|string|digits:15|unique:admin_details,gst_no',
-        'pan_no' => 'required|string|digits:10|unique:admin_details,pan_no',
+        'gst_no' => 'required|string|size:15|unique:admin_details,gst_no',
+        'pan_no' => 'required|string|size:10|unique:admin_details,pan_no',
         'aadhar_no' => 'required|string|max:255|unique:admin_details,aadhar_no',
-        'udyam_no' => 'nullable|string|digits:19',
-        'cin_no' => 'nullable|string|digits:21',
-        'epf_no' => 'nullable|string|digits:15',
-        'esic_no' => 'nullable|string|digits:17',
+        'udyam_no' => 'nullable|string|size:19',
+        'cin_no' => 'nullable|string|size:21',
+        'epf_no' => 'nullable|string|size:15',
+        'esic_no' => 'nullable|string|size:17',
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
@@ -166,13 +167,13 @@ class CompanyController extends Controller
         'city' => 'required|exists:city,id',      
         'distt' => 'required|exists:district,id',   
         'state' => 'required|exists:state,id',
-        'gst_no' => 'required|string|digits:15',
-        'pan_no' => 'required|string|digits:10',
-        'aadhar_no' => 'required|string|digits:12',
-        'udyam_no' => 'nullable|string|digits:19',
-        'cin_no' => 'nullable|string|digits:21',
-        'epf_no' => 'nullable|string|digits:15',
-        'esic_no' => 'nullable|string|digits:17',
+        'gst_no' => 'required|string|size:15',
+        'pan_no' => 'required|string|size:10',
+        'aadhar_no' => 'required|string|size:12',
+        'udyam_no' => 'nullable|string|size:19',
+        'cin_no' => 'nullable|string|size:21',
+        'epf_no' => 'nullable|string|size:15',
+        'esic_no' => 'nullable|string|size:17',
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
@@ -221,6 +222,99 @@ class CompanyController extends Controller
         return redirect()->back()->with(['class'=>'danger', 'message'=>'Failed to update company. Please try again later.']);
     }
 }
+public function verifyInsert()
+{
+    DB::beginTransaction();
+    try {
+        $existingCompanies = [];
+        $newCompanies = [];
+
+        // Fetch temporary companies
+        $tempCompanies = Temp_companydetail::all();
+
+        foreach ($tempCompanies as $tempCompany) {
+            // Check if the company already exists by some unique identifier (e.g., GST, CIN, etc.)
+            $existingCompany = CompanyDtails::where('gst_no', $tempCompany->gst_no)
+                ->orWhere('cin_no', $tempCompany->cin_no)
+                ->first();
+
+            if ($existingCompany) {
+                // Add to existing companies array
+                $existingCompanies[] = $tempCompany->company_name;
+                continue; // Skip this company as it already exists
+            }
+
+            // Get State ID by state name
+            $state = State::where('state_title', $tempCompany->state)->first();
+            if (!$state) {
+                throw new \Exception('State not found: ' . $tempCompany->state);
+            }
+
+            // Get District ID by district name and state_id
+            $district = District::where('district_title', $tempCompany->distt)
+                ->where('state_id', $state->id)
+                ->first();
+            if (!$district) {
+                throw new \Exception('District not found: ' . $tempCompany->distt . ' in state: ' . $tempCompany->state);
+            }
+
+            // Get City ID by city name and district_id
+            $city = City::where('name', $tempCompany->city)
+                ->where('districtid', $district->id)
+                ->first();
+            if (!$city) {
+                throw new \Exception('City not found: ' . $tempCompany->city . ' in district: ' . $tempCompany->distt);
+            }
+
+            // Insert new company into Company table
+            $company = Company::create([
+                'name' => $tempCompany->company_name,
+                'email' => $tempCompany->contact_no, // or other relevant fields
+                'mobile' => $tempCompany->contact_no
+            ]);
+
+            // Insert details into CompanyDetails table with fetched state, district, and city IDs
+            CompanyDtails::create([
+                'company_id' => $company->id,
+                'type' => $tempCompany->type,
+                'owner_name' => $tempCompany->owner_name,
+                'address' => $tempCompany->address,
+                'city_id' => $city->id,
+                'district_id' => $district->id,
+                'state_id' => $state->id,
+                'gst_no' => $tempCompany->gst_no,
+                'pan_no' => $tempCompany->pan_no,
+                'aadhar_no' => $tempCompany->aadhar_no,
+                'udyam_no' => $tempCompany->udyam_no,
+                'cin_no' => $tempCompany->cin_no,
+                'epf_no' => $tempCompany->epf_no,
+                'esic_no' => $tempCompany->esic_no,
+                'bank_name' => $tempCompany->bank_name,
+                'ac_no' => $tempCompany->ac_no,
+                'ifs_code' => $tempCompany->ifs_code
+            ]);
+
+            // Add to new companies array
+            $newCompanies[] = $tempCompany->company_name;
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Companies verified and inserted successfully.',
+            'existing_companies' => $existingCompanies,
+            'new_companies' => $newCompanies
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage() // Return the specific error
+        ]);
+    }
+}
 
 
     /**
@@ -231,7 +325,8 @@ class CompanyController extends Controller
         //
     }
     public function import(){
-        return view('admin.company.import');
+        $tempCompanies = Temp_companydetail::paginate(10);
+        return view('admin.company.import', compact('tempCompanies'));
     }
     public function storeimport(Request $request){
         $request->validate([

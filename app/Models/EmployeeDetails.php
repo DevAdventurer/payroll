@@ -24,7 +24,15 @@ class EmployeeDetails extends Model
         'nationality',
         'city_id', 'state_id', 'district_id',
     ];
-
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+    
+            $model->nationality = 'Indian';
+           
+        });
+    }
     public function employee()
 {
     return $this->belongsTo(Employee::class, 'admin_id', 'id');

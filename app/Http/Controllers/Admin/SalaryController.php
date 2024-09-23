@@ -10,7 +10,10 @@ use App\Imports\TempEmployeeSalaryDetailsImport;
 class SalaryController extends Controller
 {
     public function index(){
-        $companies = Company::whereNotNull('company_id')->pluck('name', 'id');
+        $companies = Company::
+        where('entity_type', 'company')
+        ->pluck('name', 'id');
+    
 
         return view('admin.salary.create',compact('companies'));
     }

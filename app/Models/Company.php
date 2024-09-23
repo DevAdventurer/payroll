@@ -10,7 +10,7 @@ class Company extends Model
     use HasFactory;
     protected $table='admins'; 
     protected $fillable = [
-        'name', 'email', 'password','role_id','mobile'
+        'name', 'email', 'password','role_id','mobile','entity_type'
     ];
     protected static function boot()
     {
@@ -19,6 +19,7 @@ class Company extends Model
         // Listen to the creating event to set the role_id automatically
         static::creating(function ($model) {
             $model->role_id = 3; // Set a default role_id, e.g., 3
+            $model->entity_type = 'company';
         });
     }
     public function details()

@@ -10,13 +10,15 @@ class Employee extends Model
     use HasFactory;
     protected $table='admins'; 
     protected $fillable = [
-        'name', 'email', 'password','role_id','mobile','gender','date_of_birth','company_id'
+        'name', 'email', 'password','role_id','mobile','gender','date_of_birth','company_id','entity_type','wages_id'
     ];
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->role_id = 4; 
+            $model->entity_type = 'employee';
+           
         });
     }
     public function company()

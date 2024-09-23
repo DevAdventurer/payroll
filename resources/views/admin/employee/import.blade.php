@@ -36,7 +36,7 @@
     <div class="col-lg-12 col-sm-12 col-12">
         <div class="card">
             <div class="card-header bg-transparent border-primary">
-                <h5 class="my-0 text-primary">Upload Salary Sheet</h5>
+                <h5 class="my-0 text-primary">Upload Employee Sheet</h5>
             </div>
         </div>
     </div>
@@ -55,11 +55,25 @@
                 <div class="card-content">
                     <div class="card-body">
 
-                        <!-- Company Selection and Excel File Upload in one row -->
+                        <!-- Company Selection, Excel File Upload, and Submit Button in One Row -->
                         <div class="row">
-                        
 
-                            <div class="col-md-6 mb-3 form-group">
+                            <!-- Company Dropdown -->
+                            <div class="col-md-4 mb-3 form-group">
+                                {{ html()->label('Select Company')->for('company_id') }}
+                                <select name="company_id" id="company_id" class="form-control" required>
+                                    <option value="" selected disabled>Select Company</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('company_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Excel File Upload -->
+                            <div class="col-md-4 mb-3 form-group">
                                 {{ html()->label('Upload Company Detail Excel Sheet')->for('company_excel') }}
                                 {{ html()->file('company_excel')
                                     ->class('form-control')
@@ -69,13 +83,12 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
 
-                        <!-- Save Button -->
-                        <div class="row">
-                            <div class="col-md-12 mb-3 form-group text-end">
+                            <!-- Submit Button -->
+                            <div class="col-md-4 mb-3 form-group d-flex align-items-end justify-content-end">
                                 {{ html()->submit('Upload')->class('btn btn-primary') }}
                             </div>
+
                         </div>
 
                     </div>
@@ -85,6 +98,7 @@
     </div>
 
 {{ html()->form()->close() }}
+
 
 
 

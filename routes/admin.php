@@ -142,13 +142,14 @@ Route::middleware('admin.auth')->group(function() {
         Route::match(['get','patch'],'company', 'index')->name('company.index')->middleware('can:browse_company');
         Route::get('company/create', 'create')->name('company.create')->middleware('can:add_company');
         Route::get('company/import', 'import')->name('company.import')->middleware('can:add_company');
-        Route::post('company/import', 'storeimport')->name('company.import')->middleware('can:add_company');
+        Route::post('company/import', 'storeimport')->name('company.storeimport')->middleware('can:add_company');
         Route::get('company/{company}', 'show')->name('company.show')->middleware('can:read_company');
         Route::get('company/{company}/edit', 'edit')->name('company.edit')->middleware('can:edit_company');
         Route::post('company', 'store')->name('company.store')->middleware('can:add_company');
         Route::put('company/{company}', 'update')->name('company.update')->middleware('can:edit_company');
         Route::delete('company/{company}/delete', 'destroy')->name('company.destroy')->middleware('can:delete_company');
         Route::put('company/change-status', 'changeStatus')->name('company.changeStatus')->middleware('can:change_status_company');
+        Route::post('company/verify', 'verifyInsert')->name('company.verify')->middleware('can:add_company');
     });
     //Salary
     Route::controller(SalaryController::class)->group(function(){
@@ -173,7 +174,7 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('minimum-wages/change-status', 'changeStatus')->name('minimum-wages.changeStatus')->middleware('can:change_status_minimum_wages');
     });
 
-    //employee
+    //employee   
     Route::controller(EmployeeController::class)->group(function(){
         Route::match(['get','patch'],'employee', 'index')->name('employee.index')->middleware('can:browse_employee');
         Route::get('employee/create', 'create')->name('employee.create')->middleware('can:add_employee');
@@ -181,12 +182,15 @@ Route::middleware('admin.auth')->group(function() {
         Route::get('employee/{employee}/edit', 'edit')->name('employee.edit')->middleware('can:edit_employee');
         Route::get('employee/{employee}/salary', 'salary')->name('employee.salary')->middleware('can:edit_employee');
         Route::post('employee/{employee}/salary', 'storesalary')->name('employee.salary')->middleware('can:edit_employee');
-        Route::get('employee/import', 'import')->name('employee.import')->middleware('can:add_employee');
-        Route::post('employee/import', 'storeimport')->name('employee.import')->middleware('can:add_employee');
         Route::post('employee', 'store')->name('employee.store')->middleware('can:add_employee');
         Route::put('employee/{employee}', 'update')->name('employee.update')->middleware('can:edit_employee');
         Route::delete('employee/{employee}/delete', 'destroy')->name('employee.destroy')->middleware('can:delete_employee');
         Route::put('employee/change-status', 'changeStatus')->name('employee.changeStatus')->middleware('can:change_status_employee');
+        Route::get('employee/uploaded-data/excell/{employee}',  'showUploadedData')->name('employee.uploaded_data.excell')->middleware('can:read_employee');
+        
+        Route::get('employee/import/excell', 'import')->name('employee.import.excell')->middleware('can:add_employee');
+        Route::post('employee/import', 'storeimport')->name('employee.import')->middleware('can:add_employee');
+        Route::post('employee/verify', 'verify')->name('employee.verify')->middleware('can:add_employee');
     });
 
 

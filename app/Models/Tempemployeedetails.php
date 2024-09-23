@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Tempemployeedetails extends Model
 {
     use HasFactory;
+    protected $table='tempemployeedetails';
     protected $fillable = [
         'employee_name',
         'father_or_husband_name',
         'gender',
+        'email',
         'aadhar_no',
         'mobile',
         'bank_account_no',
@@ -36,5 +38,6 @@ class Tempemployeedetails extends Model
         'deduction',
         'conveyance',
         'skill_level',
+        'company_id'
     ];
 }
