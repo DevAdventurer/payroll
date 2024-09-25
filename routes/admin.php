@@ -161,6 +161,8 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('salary/{salary}', 'update')->name('salary.update')->middleware('can:edit_salary');
         Route::delete('salary/{salary}/delete', 'destroy')->name('salary.destroy')->middleware('can:delete_salary');
         Route::put('salary/change-status', 'changeStatus')->name('salary.changeStatus')->middleware('can:change_status_salary');
+        Route::get('salary/details/{id}','getEmployeeDetails')->name('salary.details');
+
     });
     //Wages
     Route::controller(WagesController::class)->group(function(){

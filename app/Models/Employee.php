@@ -33,4 +33,8 @@ class Employee extends Model
     {
         return $query->where('role_id', 4); 
     }
+    public function tempMonthlySalaries()
+    {
+        return $this->hasMany(TempMonthlySalary::class, 'admin_id');
+    }
 }
