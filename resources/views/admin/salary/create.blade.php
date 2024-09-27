@@ -28,7 +28,15 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-
+                @can('add_salary')
+                <div class="page-title-right">
+                    <a href="{{ route('admin.'.request()->segment(2).'.allsalary') }}"  class="btn-sm btn btn-primary btn-label rounded-pill">
+                        <i class="bx bx-plus label-icon align-middle rounded-pill fs-16 me-2"></i>
+                        Export Company  {{Str::title(str_replace('-', ' ', request()->segment(2)))}} Sheet
+                    </a>
+                </div>
+                
+                @endcan
                 <!-- Title Outside the Form -->
                 <div class="row my-1">
                     <div class="col-lg-12 col-sm-12 col-12">
@@ -179,21 +187,28 @@
 
                                     <!-- Action Buttons -->
                                     <div class="text-end">
-                                        <button type="button" class="btn btn-success" id="verifyButton">Verify</button>
-                                        <button type="button" class="btn btn-danger" id="cancelButton">Cancel</button>
+                                        <form method="POST" action="{{ route('admin.' . request()->segment(2) . '.verify') }}">
+                                            @csrf
+                                            {{-- <input type="hidden" name="company_id" value="{{ $companyId }}"> --}}
+                                            <button type="submit" class="btn btn-success" id="verifyButton">Verify</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.' . request()->segment(2) . '.cancel') }}">
+                                            @csrf
+                                        <button type="submit" class="btn btn-danger" id="cancelButton">Cancel</button>
+                                    </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @else
-                    <div class="row my-1">
+                    {{-- <div class="row my-1">
                         <div class="col-lg-12">
                             <div class="alert alert-warning">
                                 <strong>No salary data found.</strong> Please upload a wage sheet to display data.
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 @endif
 
             </div>

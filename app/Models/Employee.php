@@ -37,4 +37,8 @@ class Employee extends Model
     {
         return $this->hasMany(TempMonthlySalary::class, 'admin_id');
     }
+    public function salaryDetails()
+    {
+        return $this->hasMany(MonthlySalaryDetail::class, 'employee_id');
+    }
 }

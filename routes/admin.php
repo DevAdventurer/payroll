@@ -155,13 +155,19 @@ Route::middleware('admin.auth')->group(function() {
     Route::controller(SalaryController::class)->group(function(){
         Route::match(['get','patch'],'salary', 'index')->name('salary.index')->middleware('can:browse_salary');
         Route::get('salary/create', 'create')->name('salary.create')->middleware('can:add_salary');
-        Route::get('salary/{salary}', 'show')->name('salary.show')->middleware('can:read_salary');
+        // Route::get('salary/{salary}', 'show')->name('salary.show')->middleware('can:read_salary');
         Route::get('salary/{salary}/edit', 'edit')->name('salary.edit')->middleware('can:edit_salary');
         Route::post('salary', 'store')->name('salary.store')->middleware('can:add_salary');
         Route::put('salary/{salary}', 'update')->name('salary.update')->middleware('can:edit_salary');
+        Route::post('salary/verify','verify')->name('salary.verify')->middleware('can:add_salary');
         Route::delete('salary/{salary}/delete', 'destroy')->name('salary.destroy')->middleware('can:delete_salary');
+        Route::post('salary/cancel', 'cancel')->name('salary.cancel')->middleware('can:delete_salary');
         Route::put('salary/change-status', 'changeStatus')->name('salary.changeStatus')->middleware('can:change_status_salary');
         Route::get('salary/details/{id}','getEmployeeDetails')->name('salary.details');
+        Route::get('salary/allsalary','allsalary')->name('salary.allsalary')->middleware('can:read_salary');
+        Route::get('salary/export/{company}/{month}/{year}', 'exportSalary')->name('salary.export');
+Route::get('salary/view/{company}', 'viewSalary')->name('salary.view');
+
 
     });
     //Wages
