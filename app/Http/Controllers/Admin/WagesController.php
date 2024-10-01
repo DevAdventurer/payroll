@@ -75,4 +75,35 @@ class WagesController extends Controller
     public function create(){
         return view('admin.minimum_wages.create');
     }
+    public function edit($id){
+        $wages=Wage::find($id);
+        return view('admin.minimum_wages.edit',compact('wages'));
+    }
+
+
+
+    public function update(Request $request, $id)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'wage' => 'required|numeric|min:0', // Ensure wage is a valid number and not negative
+        ]);
+
+        // Find the existing wage record
+        $wages = Wage::findOrFail($id); // Fetch the wage record or fail with a 404
+
+        // Set the existing wage record's status to inactive
+        $wages->is_active = 'inactive'; // Mark as inactive
+        $wages->save(); // Save the changes
+
+        // Create a new wage record with the updated amount
+        Wage::create([
+            'skill_level' => $wages->skill_level, // Keep the same skill level
+            'amount' => $validatedData['wage'], // New wage amount
+            'is_active' => 'active', // Set status to active for the new record
+        ]);
+
+        // Redirect or return response as necessary
+        return redirect()->back()->with(['class' => 'success', 'message' => 'Wages Updated successfully.']);
+    }
 }

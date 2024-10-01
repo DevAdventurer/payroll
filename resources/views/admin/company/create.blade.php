@@ -82,6 +82,7 @@
                                 {{ html()->select('type', array_combine($companyTypes, $companyTypes), old('type'))
                                     ->class('form-control')
                                     ->required()
+                                    ->id('company-type') 
                                     ->placeholder('Select Company Type') }}
                                 @error('type')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -108,7 +109,7 @@
 
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('State')->for('state') }}<span class="text-danger">*</span>
-                                {{ html()->select('state', ['' => 'Select State'] + $state->pluck('state_title', 'id')->toArray())->class('form-control')->required()->attribute('id', 'state') }}
+                                {{ html()->select('state', ['' => 'Select State'] + $state->pluck('state_title', 'id')->toArray())->class('form-control')->value(old('state'))->required()->attribute('id', 'state') }}
                                 @error('state')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -120,7 +121,7 @@
                           
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('District')->for('distt') }}<span class="text-danger">*</span>
-                                <select name="distt" id="distt" class="form-control" required>
+                                <select name="distt" id="distt" class="form-control" value="old('distt')" required>
                                     <option value="">Select District</option>
                                 </select>
                                 @error('distt')
@@ -130,7 +131,7 @@
                             
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('City')->for('city') }}<span class="text-danger">*</span>
-                                <select name="city" id="city" class="form-control" required>
+                                <select name="city" id="city" class="form-control" value="old('city')" required>
                                     <option value="">Select City</option>
                                 </select>
                                 @error('city')
@@ -180,25 +181,26 @@
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('Udyam No.')->for('udyam_no') }}<span class="text-danger">*</span>
-                                {{ html()->text('udyam_no')->class('form-control')->placeholder('Enter your 19 digit Udyam Registration number')->value(old('udyam_no')) }}
+                                {{ html()->text('udyam_no')->class('form-control')->placeholder(' Udyam Registration number')->value(old('udyam_no')) }}
                                 @error('udyam_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3 form-group">
+                            <div class="col-md-6 mb-3 form-group" id="cin-field" style="display: none;">
                                 {{ html()->label('CIN No.')->for('cin_no') }}<span class="text-danger">*</span>
-                                {{ html()->text('cin_no')->class('form-control')->placeholder('Enter your 21 digitCIN No.')->value(old('cin_no')) }}
+                                {{ html()->text('cin_no')->class('form-control')->placeholder(' digitCIN No.')->value(old('cin_no')) }}
                                 @error('cin_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
+
                         <div class="row">
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('EPF No.')->for('epf_no') }}<span class="text-danger">*</span>
-                                {{ html()->text('epf_no')->class('form-control')->placeholder('Enter ypur 15 digit EPF No.')->value(old('epf_no')) }}
+                                {{ html()->text('epf_no')->class('form-control')->placeholder(' EPF No.')->value(old('epf_no')) }}
                                 @error('epf_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -206,7 +208,7 @@
 
                             <div class="col-md-6 mb-3 form-group">
                                 {{ html()->label('ESIC No.')->for('esic_no') }}<span class="text-danger">*</span>
-                                {{ html()->text('esic_no')->class('form-control')->placeholder('Enter ypur 17 digit ESIC No.')->value(old('esic_no')) }}
+                                {{ html()->text('esic_no')->class('form-control')->placeholder(' ESIC No.')->value(old('esic_no')) }}
                                 @error('esic_no')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -315,4 +317,28 @@
         });
     });
 </script>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to show/hide CIN No. field
+        function toggleCinField() {
+            var companyType = document.getElementById('company-type').value; // Get the selected value
+            var cinField = document.getElementById('cin-field'); // Get the CIN No. field
+
+            if (companyType === 'Limited Liability Partnership (LLP)') {
+                cinField.style.display = 'none'; // Hide CIN No. field for LLP
+            } else {
+                cinField.style.display = 'block'; // Show CIN No. field for other types
+            }
+        }
+
+        // Run the function on page load
+        toggleCinField();
+
+        // Run the function when the company type changes
+        document.getElementById('company-type').addEventListener('change', function() {
+            toggleCinField();
+        });
+    });
+</script>
+
 @endpush

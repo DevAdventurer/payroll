@@ -10,7 +10,8 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\District;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 use App\Models\Company;
 use App\Http\Resources\Admin\Company\CompanyCollection;
 use App\Imports\CompanyImport;
@@ -68,24 +69,72 @@ class CompanyController extends Controller
     // Validate the request data
     $validatedData = $request->validate([
         'company_name' => 'required|string|max:255|unique:admins,name',
-        'email' => 'required|email|max:255|unique:admins,email',
-        'contact_no' => 'required|string|max:20|regex:/^\d{10}$/',
+       'email' => [
+    'required',
+    'email',
+    'max:255',
+    Rule::unique('admins')->where(function ($query) {
+        return $query->where('entity_type', 'company');
+    })
+],
+        'contact_no' => 'required|string|max:10|regex:/^\d{10}$/',
         'type' => 'required|string|max:255',
         'owner_name' => 'required|string|max:255',
         'address' => 'required|string',
        'city' => 'required|exists:city,id',      
         'distt' => 'required|exists:district,id',   
         'state' => 'required|exists:state,id', 
-        'gst_no' => 'required|string|size:15|unique:admin_details,gst_no',
-        'pan_no' => 'required|string|size:10|unique:admin_details,pan_no',
-        'aadhar_no' => 'required|string|max:255|unique:admin_details,aadhar_no',
-        'udyam_no' => 'nullable|string|size:19',
-        'cin_no' => 'nullable|string|size:21',
-        'epf_no' => 'nullable|string|size:15',
-        'esic_no' => 'nullable|string|size:17',
-        'bank_name' => 'required|string|max:255',
-        'ac_no' => 'required|string|max:255',
-        'ifs_code' => 'required|string|max:255',
+        'gst_no' => [
+        'required',
+        'string',
+        'size:15',
+        Rule::unique('admin_details', 'gst_no')->where(function ($query) {
+            return $query->whereExists(function ($subQuery) {
+                $subQuery->select(DB::raw(1))
+                         ->from('admins')
+                         ->whereColumn('admins.id', 'admin_details.admin_id')  // Assuming admin_id is the foreign key
+                         ->where('admins.entity_type', 'company');
+            });
+        })
+    ],
+    'pan_no' => [
+        'required',
+        'string',
+        'size:10',
+        Rule::unique('admin_details', 'pan_no')->where(function ($query) {
+            return $query->whereExists(function ($subQuery) {
+                $subQuery->select(DB::raw(1))
+                         ->from('admins')
+                         ->whereColumn('admins.id', 'admin_details.admin_id')  // Assuming admin_id is the foreign key
+                         ->where('admins.entity_type', 'company');
+            });
+        })
+    ],
+    'aadhar_no' => [
+        'required',
+        'string',
+        'max:255',
+        'size:12',
+        Rule::unique('admin_details', 'aadhar_no')->where(function ($query) {
+            return $query->whereExists(function ($subQuery) {
+                $subQuery->select(DB::raw(1))
+                         ->from('admins')
+                         ->whereColumn('admins.id', 'admin_details.admin_id')  // Assuming admin_id is the foreign key
+                         ->where('admins.entity_type', 'company');
+            });
+        })
+    ],
+        'udyam_no' => 'nullable|string|required',
+        'cin_no' => [
+            'nullable',
+            'string',
+            'required_unless:type,Limited Liability Partnership (LLP)', // CIN No is required unless the type is 'LLP'
+        ],
+        'epf_no' => 'nullable|string|required',
+        'esic_no' => 'nullable|string|required',
+        'bank_name' => 'required|string|max:255|required',
+        'ac_no' => 'required|string|max:255|required',
+        'ifs_code' => 'required|string|max:255|required',
     ]);
     // dd($validatedData);
     DB::beginTransaction();
@@ -123,7 +172,7 @@ class CompanyController extends Controller
     } catch (\Exception $e) {
         DB::rollBack();
         // dd($e->getMessage(), $e->getTrace());
-        return redirect()->back()->with(['class'=>'danger', 'message'=>'Failed to create Company. Please try again later.']);
+        return redirect()->back()->with(['class'=>'error', 'message'=>'Failed to create Company. Please try again later.']);
     }
 }
 
@@ -149,6 +198,7 @@ class CompanyController extends Controller
                 //    dd($city);
 
                    $district = District::pluck('district_title', 'id')->toArray(); 
+                //    dd($company);
         return view('admin.company.edit',compact('company','states','city','district'));
     }
 
@@ -159,21 +209,69 @@ class CompanyController extends Controller
 {
     $validatedData = $request->validate([
         'company_name' => 'required|string|max:255|unique:admins,name,' . $id,
-        'email' => 'required|email|max:255|unique:admins,email,' . $id,
-        'contact_no' => 'required|string|max:20|regex:/^\d{10}$/',
+        'email' => [
+            'required',
+            'email',
+            'max:255',
+            Rule::unique('admins')->where(function ($query) {
+                return $query->where('entity_type', 'company');
+            })->ignore($id) // Ignore current record for update
+        ],
+        'contact_no' => 'required|string|max:10|regex:/^\d{10}$/',
         'type' => 'required|string|max:255',
         'owner_name' => 'required|string|max:255',
         'address' => 'required|string',
-        'city' => 'required|exists:city,id',      
-        'distt' => 'required|exists:district,id',   
+        'city' => 'required|exists:city,id',
+        'distt' => 'required|exists:district,id',
         'state' => 'required|exists:state,id',
-        'gst_no' => 'required|string|size:15',
-        'pan_no' => 'required|string|size:10',
-        'aadhar_no' => 'required|string|size:12',
-        'udyam_no' => 'nullable|string|size:19',
-        'cin_no' => 'nullable|string|size:21',
-        'epf_no' => 'nullable|string|size:15',
-        'esic_no' => 'nullable|string|size:17',
+        'gst_no' => [
+            'required',
+            'string',
+           
+            Rule::unique('admin_details', 'gst_no')->where(function ($query) {
+                return $query->whereExists(function ($subQuery) {
+                    $subQuery->select(DB::raw(1))
+                             ->from('admins')
+                             ->whereColumn('admins.id', 'admin_details.admin_id') // Assuming admin_id is the foreign key
+                             ->where('admins.entity_type', 'company');
+                });
+            })
+        ],
+        'pan_no' => [
+            'required',
+            'string',
+            'size:10',
+            Rule::unique('admin_details', 'pan_no')->where(function ($query) {
+                return $query->whereExists(function ($subQuery) {
+                    $subQuery->select(DB::raw(1))
+                             ->from('admins')
+                             ->whereColumn('admins.id', 'admin_details.admin_id') // Assuming admin_id is the foreign key
+                             ->where('admins.entity_type', 'company');
+                });
+            })
+        ],
+        'aadhar_no' => [
+            'required',
+            'string',
+            'size:12',
+            Rule::unique('admin_details', 'aadhar_no')->where(function ($query) {
+                return $query->whereExists(function ($subQuery) {
+                    $subQuery->select(DB::raw(1))
+                             ->from('admins')
+                             ->whereColumn('admins.id', 'admin_details.admin_id') // Assuming admin_id is the foreign key
+                             ->where('admins.entity_type', 'company');
+                });
+            })
+        ],
+        'udyam_no' => 'nullable|string|required', // Ensure size is correct
+        'cin_no' => [
+            'nullable',
+            'string',
+           
+            'required_if:type,Limited Liability Partnership (LLP)', // CIN No is required if the type is 'LLP'
+        ],
+        'epf_no' => 'nullable|string', // Adjust size as necessary
+        'esic_no' => 'nullable|string', // Adjust size as necessary
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
@@ -322,7 +420,25 @@ public function verifyInsert()
      */
     public function destroy(string $id)
     {
-        //
+    
+       
+            // Find the company by ID where entity_type is 'company'
+            $company = Company::where('id', $id)->where('entity_type', 'company')->first();
+           $companydetails=CompanyDtails::where('id',$id)->get();
+            if ($company) {
+                // Delete the related company details
+                $company->delete();
+                $companydetails->delete();
+    
+                // Delete the company itself
+               
+    
+                return response()->json(['message'=>'Company deleted Successfully ...', 'class'=>'success']);
+            }
+    
+            // If company is not found or entity_type is not 'company'
+            return response()->json(['message'=>'Whoops, looks like something went wrong ! Try again ...', 'class'=>'error']);
+       
     }
     public function import(){
         $tempCompanies = Temp_companydetail::paginate(10);

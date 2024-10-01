@@ -59,10 +59,7 @@
                                 </select>
                             </td>
                             <td>
-                                <form method="POST" action="<?php echo e(route('admin.salary.export', $id)); ?>" style="display:inline;">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="btn btn-success">Export</button>
-                                </form>
+                                
                                 <a href="#" class="btn btn-info" onclick="return validateAndRedirect(<?php echo e($id); ?>);">
                                     View
                                 </a>

@@ -59,10 +59,10 @@
                                 </select>
                             </td>
                             <td>
-                                <form method="POST" action="{{ route('admin.salary.export', $id) }}" style="display:inline;">
+                                {{-- <form method="POST" action="{{ route('admin.salary.export', $id) }}" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-success">Export</button>
-                                </form>
+                                </form> --}}
                                 <a href="#" class="btn btn-info" onclick="return validateAndRedirect({{ $id }});">
                                     View
                                 </a>

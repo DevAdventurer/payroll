@@ -241,7 +241,10 @@ class EmployeeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $Employee=Employee::find($id);
+        $Employee->delete();
+        return redirect()->json()->with(['class' => 'success', 'message' => 'Employee deleted successfully.']);
+       
     }
    
     public function salary($id)
@@ -299,6 +302,7 @@ class EmployeeController extends Controller
                 Excel::import(new EmployeeDetailsImport($request->company_id), $file);
                 return redirect()->route('admin.employee.uploaded_data.excell', ['employee' => $request->company_id])->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
             } catch (\Exception $e) {
+                dd($e);
                 return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import Employee data. Please try again later.']);
             }
         }

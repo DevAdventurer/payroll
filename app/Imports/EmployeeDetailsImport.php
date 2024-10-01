@@ -23,7 +23,7 @@ class EmployeeDetailsImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        // dd($row);
+       
         return new TempEmployeeDetails([
             'company_id' => $this->companyId,
             'employee_name' => $row['employee_name'], // Use correct keys
@@ -39,7 +39,7 @@ class EmployeeDetailsImport implements ToModel, WithHeadingRow
         'pf_no' => $row['pf_no'],
        'date_of_birth' => Carbon::createFromFormat('dmy', $row['date_of_birth']), // Adjust the format as needed
         'date_of_joining' => Carbon::createFromFormat('dmy', $row['date_of_joining']), // Adjust the format as needed
-        'date_of_relieving' => Carbon::createFromFormat('dmy', $row['date_of_relieving']),
+      
         'location' => $row['location'],
         'nationality' => $row['nationality'],
         'designation' => $row['designation'],
@@ -50,6 +50,8 @@ class EmployeeDetailsImport implements ToModel, WithHeadingRow
         'lwf' => $row['lwf'],
         'deduction' => $row['deduction'],
         'conveyance' => $row['conveyance'],
+        'state'=> $row['state'],
+        'district'=> $row['district'],
         ]);
     }
 }

@@ -88,11 +88,10 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3 form-group">
                                             {{ html()->label('Type')->for('type') }}<span class="text-danger">*</span>
-                                            {{ html()->select('type', $companyTypes)
-                                                ->class('form-control')
-                                                ->required()
-                                                ->placeholder('Select Company Type')
-                                                ->value(old('type', $company->details->type ?? '')) }}
+        {{ html()->select('type', array_combine($companyTypes, $companyTypes), old('type', $company->details->type ?? ''))
+            ->class('form-control')
+            ->required() ->id('company-type')
+            ->placeholder('Select Company Type') }}
                                             @error('type')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -217,9 +216,12 @@
                                             @enderror
                                         </div>
             
-                                        <div class="col-md-6 mb-3 form-group">
+                                        <div id="cin-field" class="col-md-6 mb-3 form-group" style="display: none;">
                                             {{ html()->label('CIN No.')->for('cin_no') }}<span class="text-danger">*</span>
-                                            {{ html()->text('cin_no')->class('form-control')->placeholder('Enter your 21 digitCIN No.')->value(old('cin_no',$company->details->cin_no ?? '')) }}
+                                            {{ html()->text('cin_no')
+                                                ->class('form-control')
+                                                ->placeholder('Enter your 21 digit CIN No.')
+                                                ->value(old('cin_no', $company->details->cin_no ?? '')) }}
                                             @error('cin_no')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -362,4 +364,28 @@ $(document).ready(function() {
     });
 });
 </script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        // Function to show/hide CIN No. field based on company type
+        function toggleCinField() {
+            var companyType = document.getElementById('company-type').value;
+            var cinField = document.getElementById('cin-field');
+            
+            if (companyType === 'Limited Liability Partnership (LLP)') {
+                cinField.style.display = 'none'; // Hide CIN No. field
+            } else {
+                cinField.style.display = 'block'; // Show CIN No. field
+            }
+        }
+
+        // Run the function on page load
+        toggleCinField();
+
+        // Run the function when the company type changes
+        document.getElementById('company-type').addEventListener('change', function() {
+            toggleCinField();
+        });
+    });
+</script>
+
 @endpush
