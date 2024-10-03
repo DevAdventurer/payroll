@@ -35,15 +35,18 @@ class TempEmployeeSalaryDetailsImport implements ToModel, WithHeadingRow
     $workingDays = $currentMonth->daysInMonth; // Total days in the month
 
     // Find the employee based on company ID and Aadhar number
-    $employee = Employee::where('company_id', $this->companyId)
-        ->whereHas('employeedetail', function ($query) use ($aadhar) {
-            $query->where('aadhar_no', $aadhar);
-        })->first();
-
+    $employee = Employee::with('employeedetail') // Eager load the 'employeedetail' relationship
+    ->where('company_id', $this->companyId)
+    ->whereHas('employeedetail', function ($query) use ($aadhar) {
+        $query->where('aadhar_no', $aadhar);
+    })->first();
+// dd($employee->employeedetail);
     if ($employee) {
-        $basicsalary = Wage::find($employee->wages_id);
-        $basic = $basicsalary->amount;
-
+        $basicsalary = Wage::where('skill_level',$employee->skillset)->where('is_active',1)->get();
+       
+        // $basic = $basicsalary->amount;
+        // dd($employee->employeedetail->basic);
+        $basic=$employee->employeedetail->basic;
         // Calculate various components
         $hra = $basic * 0.10; 
         $pfBasic = $basic * 0.12; 

@@ -145,7 +145,7 @@ unset($__errorArgs, $__bag); ?>
                             <?php echo e(html()->select('skill') 
                                 ->class('form-control')->placeholder('Select Skill')
                                 ->required()
-                                ->options($skills->pluck('skill_level', 'id')->toArray())); ?>
+                                ->options($skills->pluck('skill_level', 'skill_level')->toArray())); ?>
 
                             <?php $__errorArgs = ['skill'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

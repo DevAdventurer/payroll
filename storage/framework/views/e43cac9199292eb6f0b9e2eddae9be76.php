@@ -85,7 +85,7 @@
                         <div class="col-md-6 form-group">
                             <?php echo e(html()->label('Select Year')->for('year')); ?>
 
-                            <?php echo e(html()->select('year', $years) // You need to provide a $years array with years
+                            <?php echo e(html()->select('year', array_combine($years, $years)) // You need to provide a $years array with years
                                 ->class('form-control')
                                 ->required()
                                 ->placeholder('Select Year')

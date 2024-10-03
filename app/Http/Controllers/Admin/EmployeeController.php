@@ -70,7 +70,8 @@ class EmployeeController extends Controller
         $companies=Company::where('role_id',3)->get();
        $roles = Role::whereNotIn('id', [1, 2, 3])->get();
        $state=State::all();
-       $skills=Wage::all();
+       $skills = Wage::where('is_active', 1)->get();
+
 
         return view('admin.employee.create',compact('companies','roles','state','skills'));
     }
@@ -110,7 +111,7 @@ class EmployeeController extends Controller
             $employee = Employee::create([
                 'name' => $validatedData['employee_name'],
                 'email'=> $validatedData['email'],
-                'wages_id'=>$validatedData['skill'],
+                'skillset'=>$validatedData['skill'],
                 'mobile' => $validatedData['mobile'],
                 'gender' => $validatedData['gender'],
                 'date_of_birth' => $validatedData['date_of_birth'],
@@ -329,73 +330,104 @@ class EmployeeController extends Controller
 
     public function verify(Request $request)
     {
-       
-
         $company_id = $request->input('company_id');
         $employeeData = TempEmployeeDetails::where('company_id', $company_id)->get();
-        // dd($employeeData);
+    
         foreach ($employeeData as $employee) {
-            // dd($employee['aadhar_no']);
-            DB::enableQueryLog();
-            // Check for existing Aadhar number
-            $existingEmployee = EmployeeDetails::where('aadhar_no', $employee['aadhar_no'])->first();
-            if ($existingEmployee) {
-                continue; // Skip if employee already exists
-                // dd($existingEmployee);
-            }
+            try {
+                // dd($employee);
+                // Check for existing Aadhar number
+                $existingEmployee = EmployeeDetails::where('aadhar_no', $employee['aadhar_no'])->first();
+                if ($existingEmployee) {
+                    continue; // Skip if employee already exists
+                }
+        
+                // Check for duplicates in the current upload
+                $isRepeated = Employee::where('company_id', $company_id)
+                    ->where('email', $employee['email'])
+                    ->count() > 1;
+                if ($isRepeated) {
+                    continue; // Skip repeated records
+                }
+        
+                // Get state and district IDs
+                $state_id = getStateId($employee['state']);
+                $district_id = getDistrictId($employee['district'], $state_id);
+                // You can call `getCityId()` here if city logic is implemented
+                
+                // Prepare date fields using Carbon
+                $date_of_birth = $this->parseDate($employee['date_of_birth'], 'd/m/Y');  // Adjust format if needed
+                $date_of_joining = $this->parseDate($employee['date_of_joining'], 'd/m/Y'); // Adjust format if needed
+                $date_of_relieving = $employee['date_of_relieving'] !== 'N/A' 
+                                    ? $this->parseDate($employee['date_of_relieving'], 'd/m/Y') // Adjust format if needed
+                                    : null;
     
-            // Check for duplicates in the current upload
-            $isRepeated = Employee::where('company_id', $company_id)
-                                             ->where('email', $employee['email'])
-                                             ->count() > 1;
-            if ($isRepeated) {
-                continue; // Skip repeated records
-            }
-    
-            
-            $state_id = getStateId($employee['state']);
-            $district_id = getDistrictId($employee['district'], $state_id);
-            $city_id = getCityId($employee['city'], $district_id);
-    
-            // Prepare date fields using Carbon
-            $date_of_birth = Carbon::createFromFormat('Y-m-d', $employee['date_of_birth']);
-            $date_of_joining = Carbon::createFromFormat('Y-m-d', $employee['date_of_joining']);
-            $date_of_relieving = Carbon::createFromFormat('Y-m-d', $employee['date_of_relieving']);
-    
-            $newEmployee=new Employee();
-            $newEmployee->name=$employee['employee_name'];
-            $newEmployee->email=$employee['email'];
-            $newEmployee->mobile=$employee['mobile'];
-            $newEmployee->gender=$employee['gender'];
-            $newEmployee->date_of_birth=$employee['date_of_birth'];
-            $newEmployee->company_id=$company_id;
-            $newEmployee->save();
-            
-            $newEmployeeDetails = new EmployeeDetails();
-            $newEmployeeDetails->admin_id = $newEmployee->id;
-            $newEmployeeDetails->father_or_husband_name = $employee['father_or_husband_name'];
-            $newEmployeeDetails->aadhar_no = $employee['aadhar_no'];
-            $newEmployeeDetails->ac_no = $employee['bank_account_no'];
-            $newEmployeeDetails->bank_name = $employee['bank_name'];
-            $newEmployeeDetails->ifs_code = $employee['ifsc_code'];
-            $newEmployeeDetails->esic_no = $employee['esic_no'];
-            $newEmployeeDetails->epf_no = $employee['pf_no'];
-            $newEmployeeDetails->date_of_joining = $date_of_joining; // Ensure this is in the correct format
-            $newEmployeeDetails->date_of_relieving = $date_of_relieving; // Ensure this is in the correct format
-            $newEmployeeDetails->location = $employee['location'];
-            $newEmployeeDetails->nationality = $employee['nationality'];
-            $newEmployeeDetails->state_id = $state_id;
-            $newEmployeeDetails->district_id = $district_id;
-            $newEmployeeDetails->city_id = $city_id;
-            
-            // Save the new EmployeeDetails instance
-            $newEmployeeDetails->save();
-          
+                // Create and save Employee instance
+                $newEmployee = new Employee();
+                $newEmployee->name = $employee['employee_name'];
+                $newEmployee->email = $employee['email'];
+                $newEmployee->mobile = $employee['mobile'];
+                $newEmployee->gender = $employee['gender'];
+                $newEmployee->date_of_birth = $date_of_birth;
+                $newEmployee->company_id = $company_id;
+                $newEmployee->skillset = $employee['skill_level'];
+                $newEmployee->save();
+                
+                // Create and save EmployeeDetails instance
+                $newEmployeeDetails = new EmployeeDetails();
+                $newEmployeeDetails->admin_id = $newEmployee->id;
+                $newEmployeeDetails->father_or_husband_name = $employee['father_or_husband_name'];
+                $newEmployeeDetails->aadhar_no = $employee['aadhar_no'];
+                $newEmployeeDetails->ac_no = $employee['bank_account_no'];
+                $newEmployeeDetails->bank_name = $employee['bank_name'];
+                $newEmployeeDetails->ifs_code = $employee['ifsc_code'];
+                $newEmployeeDetails->esic_no = $employee['esic_no'];
+                $newEmployeeDetails->epf_no = $employee['pf_no'];
+                $newEmployeeDetails->date_of_joining = $date_of_joining;
+                $newEmployeeDetails->date_of_relieving = $date_of_relieving;
+                $newEmployeeDetails->location = $employee['location'];
+                $newEmployeeDetails->nationality = $employee['nationality'];
+                $newEmployeeDetails->state_id = $state_id;
+                $newEmployeeDetails->basic = $employee['basic'];
+                $newEmployeeDetails->designation =  $employee['designation'];
+                $newEmployeeDetails->pf_basic = $employee['pf_basic'];
+                $newEmployeeDetails->hra = $employee['hra'];
+                $newEmployeeDetails->allowance = $employee['allowance'];
+                $newEmployeeDetails->lwf = $employee['lwf'];
+                $newEmployeeDetails->deduction = $employee['deduction'];
+                $newEmployeeDetails->conveyance = $employee['conveyance'];
 
+                
+
+
+                // $newEmployeeDetails->city_id = getCityId($employee['city'], $district_id); // Assuming you have this function implemented
+                
+                // Save EmployeeDetails instance
+                $newEmployeeDetails->save();
+                
+            } catch (\Exception $e) {
+                // Log the error and skip to the next employee
+                dd($e);
+                Log::error('Error processing employee: ' . json_encode($employee) . ' Error: ' . $e->getMessage());
+                continue;
+            }
         }
+    
+        // Truncate TempEmployeeDetails after processing
         TempEmployeeDetails::truncate();
+    
         return redirect()->route('admin.employee.index')->with('success', 'Employee data verified and saved successfully.');
     }
+    private function parseDate($date, $format)
+{
+    try {
+        return Carbon::createFromFormat($format, $date);
+    } catch (\Exception $e) {
+        Log::error('Invalid date format: ' . $date . ' Expected format: ' . $format);
+        return null; // Return null if the format is incorrect
+    }
+}
+    
 }
 
 

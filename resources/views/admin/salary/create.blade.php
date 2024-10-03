@@ -83,7 +83,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6 form-group">
                             {{ html()->label('Select Year')->for('year') }}
-                            {{ html()->select('year', $years) // You need to provide a $years array with years
+                            {{ html()->select('year', array_combine($years, $years)) // You need to provide a $years array with years
                                 ->class('form-control')
                                 ->required()
                                 ->placeholder('Select Year')

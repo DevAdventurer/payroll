@@ -74,47 +74,77 @@ class SalaryController extends Controller
     }
 
 
-    public function verify(Request $request){
-        $tempSalaries = TempMonthlySalary::where($request->company_id)->get();
-        // dd($tempSalaries);
-    foreach ($tempSalaries as $tempSalary) {
-        // Create a new MonthlySalaryDetails record using mass assignment
-        MonthlySalaryDetail::create([
-            'employee_id' => $tempSalary->admin_id,
-            'company_id'=>$tempSalary->company_id,
-            'year' => $tempSalary->year,
-            'month' => $tempSalary->month,
-            'working_days' => $tempSalary->working_days,
-            'basic' => $tempSalary->basic,
-            'pf_basic' => $tempSalary->pf_basic,
-            'hra' => $tempSalary->hra,
-            'conveyance' => $tempSalary->conveyance,
-            'other_allowance' => $tempSalary->other_allowance,
-            'basic_amount' => $tempSalary->basic_amount,
-            'pf_basic_amount' => $tempSalary->pf_basic_amount,
-            'hra_amount' => $tempSalary->hra_amount,
-            'conveyance_amount' => $tempSalary->conveyance_amount,
-            'other_allowance_amount' => $tempSalary->other_allowance_amount,
-            'total_amount' => $tempSalary->total_amount,
-            'epf_employee' => $tempSalary->epf_employee,
-            'epf_employer' => $tempSalary->epf_employer,
-            'eps_employer' => $tempSalary->eps_employer,
-            'esi_employee' => $tempSalary->esi_employee,
-            'esi_employer' => $tempSalary->esi_employer,
-            'psdt_amount' => $tempSalary->psdt_amount,
-            'tds_amount' => $tempSalary->tds_amount,
-            'lwf_employer' => $tempSalary->lwf_employer,
-            'lwf_employee' => $tempSalary->lwf_employee,
-            'other_if_any' => $tempSalary->other_if_any,
-            'total_deductions' => $tempSalary->total_deductions,
-            'net_payable' => $tempSalary->net_payable,
-            'advance' => $tempSalary->advance,
-        ]);
+    public function verify(Request $request)
+{
+    // Start a database transaction
+    DB::beginTransaction();
 
+    try {
+        // Retrieve the temporary salaries
+        $tempSalaries = TempMonthlySalary::where('company_id', $request->company_id)->get();
+
+        // Initialize an array to store the IDs of successfully inserted records
+        $insertedTempSalaryIds = [];
+
+        // Loop through the temp salaries and insert each into MonthlySalaryDetail
+        foreach ($tempSalaries as $tempSalary) {
+            MonthlySalaryDetail::create([
+                'employee_id' => $tempSalary->admin_id,
+                'company_id' => $tempSalary->company_id,
+                'year' => $tempSalary->year,
+                'month' => $tempSalary->month,
+                'working_days' => $tempSalary->working_days,
+                'basic' => $tempSalary->basic,
+                'pf_basic' => $tempSalary->pf_basic,
+                'hra' => $tempSalary->hra,
+                'conveyance' => $tempSalary->conveyance,
+                'other_allowance' => $tempSalary->other_allowance,
+                'basic_amount' => $tempSalary->basic_amount,
+                'pf_basic_amount' => $tempSalary->pf_basic_amount,
+                'hra_amount' => $tempSalary->hra_amount,
+                'conveyance_amount' => $tempSalary->conveyance_amount,
+                'other_allowance_amount' => $tempSalary->other_allowance_amount,
+                'total_amount' => $tempSalary->total_amount,
+                'epf_employee' => $tempSalary->epf_employee,
+                'epf_employer' => $tempSalary->epf_employer,
+                'eps_employer' => $tempSalary->eps_employer,
+                'esi_employee' => $tempSalary->esi_employee,
+                'esi_employer' => $tempSalary->esi_employer,
+                'psdt_amount' => $tempSalary->psdt_amount,
+                'tds_amount' => $tempSalary->tds_amount,
+                'lwf_employer' => $tempSalary->lwf_employer,
+                'lwf_employee' => $tempSalary->lwf_employee,
+                'other_if_any' => $tempSalary->other_if_any,
+                'total_deductions' => $tempSalary->total_deductions,
+                'net_payable' => $tempSalary->net_payable,
+                'advance' => $tempSalary->advance,
+            ]);
+
+            // Store the ID of the successfully inserted temporary salary record
+            $insertedTempSalaryIds[] = $tempSalary->id;
+        }
+
+        // If everything was inserted successfully, commit the transaction
+        DB::commit();
+
+        // Truncate only the inserted records from TempMonthlySalary table
+        TempMonthlySalary::whereIn('id', $insertedTempSalaryIds)->delete();
+
+        return redirect()->back()->with(['class' => 'success', 'message' => 'Employee Salary uploaded successfully.']);
+
+    } catch (\Exception $e) {
+dd($e->getMessage());
+
+        // If there's an error, roll back the transaction
+        DB::rollBack();
+        // Log the error for debugging
+        \Log::error('Salary upload failed: '.$e->getMessage());
+
+        // Return with an error message
+        return redirect()->back()->with(['class' => 'error', 'message' => 'Failed to upload employee salary.']);
     }
-    DB::table('tempmonthlysalary')->truncate();
-    return redirect()->back()->with(['class' => 'success', 'message' => 'Employee Salary uploaded successfully.']);
-    }
+}
+
 
     public function cancel(){
         DB::table('tempmonthlysalary')->truncate();
@@ -135,7 +165,7 @@ class SalaryController extends Controller
 
         $month = $request->input('month');
         $year = $request->input('year');
-
+        // dd($month);
         // Fetch the salary details for the given company, month, and year
         $salaryDetails = MonthlySalaryDetail::with('employee') // Eager load the employee relationship
         ->where('company_id', $company)

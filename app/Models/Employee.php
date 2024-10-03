@@ -10,7 +10,7 @@ class Employee extends Model
     use HasFactory;
     protected $table='admins'; 
     protected $fillable = [
-        'name', 'email', 'password','role_id','mobile','gender','date_of_birth','company_id','entity_type','wages_id'
+        'name', 'email', 'password','role_id','mobile','gender','date_of_birth','company_id','entity_type','skillset'
     ];
     protected static function boot()
     {

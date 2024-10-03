@@ -98,7 +98,7 @@
                             {{ html()->select('skill') 
                                 ->class('form-control')->placeholder('Select Skill')
                                 ->required()
-                                ->options($skills->pluck('skill_level', 'id')->toArray()) 
+                                ->options($skills->pluck('skill_level', 'skill_level')->toArray()) 
                             }}
                             @error('skill')
                                 <div class="invalid-feedback">{{ $message }}</div>
