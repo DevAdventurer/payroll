@@ -30,15 +30,18 @@ class SalaryExport implements FromCollection, WithHeadings
                 'HRA' => number_format($detail->hra, 2),
                 'Conveyance' => number_format($detail->conveyance, 2),
                 'Other Allowance' => number_format($detail->other_allowance, 2),
+                'Advance' => number_format($detail->advance, 2),
                 'Total Amount' => number_format($detail->total_amount, 2),
                 'EPF (Employee)' => number_format($detail->epf_employee, 2),
                 'EPF (Employer)' => number_format($detail->epf_employer, 2),
                 'EPS (Employer)' => number_format($detail->eps_employer, 2),
                 'ESI (Employee)' => number_format($detail->esi_employee, 2),
                 'ESI (Employer)' => number_format($detail->esi_employer, 2),
+                'LWF EMPLOYER' => '20',
+                'LWF EMPLOYEE' =>'5',
                 'Total Deductions' => number_format($detail->total_deductions, 2),
                 'Net Payable' => number_format($detail->net_payable, 2),
-                'Advance' => number_format($detail->advance, 2),
+               
             ];
         });
     }
@@ -55,15 +58,18 @@ class SalaryExport implements FromCollection, WithHeadings
             'HRA',
             'Conveyance',
             'Other Allowance',
+            'Advance',
             'Total Amount',
             'EPF (Employee)',
             'EPF (Employer)',
             'EPS (Employer)',
             'ESI (Employee)',
             'ESI (Employer)',
+            'LWF EMPLOYER' ,
+            'LWF EMPLOYEE' ,
             'Total Deductions',
             'Net Payable',
-            'Advance',
+            
         ];
     }
 }
