@@ -175,9 +175,11 @@ class SalaryController extends Controller
         ->where('year', $year)
         ->get();
         // dd($salaryDetails);
-        if ($salaryDetails) {
+        if (count($salaryDetails)>0) {
            
             return view('admin.salary.singlecompanysalary',compact('salaryDetails'));
+        }else{
+            return redirect()->back()->with(['class'=>'success','message'=>'No salary sheet found for this month']);
         }
     
        
@@ -190,6 +192,8 @@ class SalaryController extends Controller
         ->where('month', $month)
         ->where('year', $year)
         ->get();
-        return Excel::download(new SalaryExport($salaryDetails), 'salary_details.xlsx');
+        $comapnyname=Company::find($company);
+        // dd($comapnyname->name);
+        return Excel::download(new SalaryExport($salaryDetails), $comapnyname->name.'salary_details.xlsx');
     }
 }

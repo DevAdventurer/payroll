@@ -300,8 +300,14 @@ class EmployeeController extends Controller
 
             try {
                 TempEmployeeDetails::truncate();
-                Excel::import(new EmployeeDetailsImport($request->company_id), $file);
-                return redirect()->route('admin.employee.uploaded_data.excell', ['employee' => $request->company_id])->with(['class' => 'success', 'message' => 'Company data imported successfully.']);
+                $import=new EmployeeDetailsImport($request->company_id);
+                Excel::import($import, $file);
+                if (count($import->existingAadhars)>0) {
+                    session()->flash('warning', 'Some Aadhar numbers already exist:');
+                    session()->flash('existing_aadhars', $import->existingAadhars);
+                }
+              
+                return redirect()->route('admin.employee.uploaded_data.excell', ['employee' => $request->company_id])->with(['class' => 'success', 'message' => 'Company data imported successfully.','existadhaar'=>$import->existingAadhars]);
             } catch (\Exception $e) {
                 dd($e);
                 return redirect()->back()->with(['class' => 'danger', 'message' => 'Failed to import Employee data. Please try again later.']);
@@ -330,6 +336,7 @@ class EmployeeController extends Controller
 
     public function verify(Request $request)
     {
+        // dd($request->all());
         $company_id = $request->input('company_id');
         $employeeData = TempEmployeeDetails::where('company_id', $company_id)->get();
     
@@ -337,8 +344,13 @@ class EmployeeController extends Controller
             try {
                 // dd($employee);
                 // Check for existing Aadhar number
-                $existingEmployee = EmployeeDetails::where('aadhar_no', $employee['aadhar_no'])->first();
+                $existingEmployee = EmployeeDetails::whereHas('employee', function ($query) use ($company_id) {
+                    $query->where('company_id', $company_id);
+                })->where('aadhar_no', $employee['aadhar_no'])->first();
+    
+                // If Aadhar number exists, add to the warning array and skip to next
                 if ($existingEmployee) {
+                    $existingAadhars[] = $existingEmployee->aadhar_no; // Store Aadhar in array
                     continue; // Skip if employee already exists
                 }
         

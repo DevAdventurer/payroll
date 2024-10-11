@@ -35,6 +35,11 @@
     <link href="<?php echo e(asset('admin-assets/css/custom.min.css')); ?>" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="<?php echo e(asset('admin-assets/libs/glightbox/css/glightbox.min.css')); ?>">
+    <style>
+        .alert {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>

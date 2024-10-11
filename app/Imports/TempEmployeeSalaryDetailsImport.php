@@ -61,7 +61,7 @@ class TempEmployeeSalaryDetailsImport implements ToModel, WithHeadingRow
             $tempMonthlySalary->working_days = $workingDays;
             $tempMonthlySalary->basic = intval(round($basic)); // Convert to integer after rounding
             $tempMonthlySalary->pf_basic = intval(round($pfBasic));
-            $tempMonthlySalary->hra = intval(round($hra));
+            $tempMonthlySalary->hra = '0';
             $tempMonthlySalary->conveyance = intval(round($conveyance));
             $tempMonthlySalary->other_allowance = intval(round($otherAllowance));
             $tempMonthlySalary->basic_amount = 0;

@@ -35,7 +35,17 @@
                         </div>
                     </div>
                 </div>
-
+                @if(session('warning'))
+                <div class="alert alert-warning">
+                    <strong>{{ session('warning') }}</strong>
+                    <ul>
+                        @foreach(session('existing_aadhars') as $aadhar)
+                            <li>{{ $aadhar }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
                 <!-- Form Starts Here -->
                 <div style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-bordered">

@@ -35,7 +35,17 @@
                         </div>
                     </div>
                 </div>
-
+                <?php if(session('warning')): ?>
+                <div class="alert alert-warning">
+                    <strong><?php echo e(session('warning')); ?></strong>
+                    <ul>
+                        <?php $__currentLoopData = session('existing_aadhars'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $aadhar): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($aadhar); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+            
                 <!-- Form Starts Here -->
                 <div style="max-height: 400px; overflow-y: auto;">
                     <table class="table table-bordered">

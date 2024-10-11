@@ -40,7 +40,16 @@
                 <!--        <i class='bx bx-show fs-22'></i>-->
                 <!--    </a>-->
                 <!--</div>-->
-
+                <?php if(session('message')): ?>
+                <div class="alert alert-success"><?php echo e(session('message')); ?></div>
+            <?php endif; ?>
+        
+            <!-- Error Message -->
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+            <?php endif; ?>
+        
+            
 
               
             </div>
@@ -92,4 +101,6 @@
             </div>
         </div>
     </div>
-</header><?php /**PATH C:\Users\HP\Desktop\New folder\payrolloriginal\resources\views/admin/layouts/header.blade.php ENDPATH**/ ?>
+</header>
+
+<?php /**PATH C:\Users\HP\Desktop\New folder\payrolloriginal\resources\views/admin/layouts/header.blade.php ENDPATH**/ ?>
