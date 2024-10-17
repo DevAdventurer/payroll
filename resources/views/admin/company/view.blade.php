@@ -56,17 +56,18 @@
                         
                             <tr>
                                 <th>Address</th>
-                                <td>{{ $adminDetail->address }}</td>
+                                <td>{{ $adminDetail->address ?? 'N/A' }}</td>
                                 <th>City</th>
-                                <td>{{ $adminDetail->city }}</td>
+                                <td>{{ $city}}</td>
                             </tr>
-                        
+                            
                             <tr>
                                 <th>District</th>
-                                <td>{{ $adminDetail->distt }}</td>
+                                <td>{{ $district}}</td>
                                 <th>State</th>
-                                <td>{{ $adminDetail->state }}</td>
+                                <td>{{$state }}</td>
                             </tr>
+                            
                         
                             <tr>
                                 <th>GST No.</th>

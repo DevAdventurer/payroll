@@ -55,8 +55,9 @@ class EmployeeController extends Controller
         
         $request->merge(['recordsTotal' => $datas->count(), 'length' => $request->length]);
         $datas = $datas->limit($request->length)->offset($request->start)->get();
+        // dd($datas);
+
         return response()->json(new EmployeeCollection($datas));
-        
         }
         return view('admin.employee.list');
    
@@ -150,6 +151,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::with('company')->findOrFail($id);
         $employeeDetails = EmployeeDetails::where('admin_id', $employee->id)->first();
+        // dd($employeeDetails);
         return view('admin.employee.view',compact('employee', 'employeeDetails'));
     }
 

@@ -24,7 +24,7 @@ class TempMonthlySalary extends Model
         'hra_amount', 
         'conveyance_amount', 
         'other_allowance_amount', 
-        'total_amount', 
+        'rate_of_pay', 
         'epf_employee', 
         'epf_employer', 
         'eps_employer', 

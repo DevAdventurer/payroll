@@ -11,7 +11,7 @@ use App\Imports\TempEmployeeSalaryDetailsImport;
 use App\Models\MonthlySalaryDetail;
 use Illuminate\Support\Facades\DB;
 use App\Exports\SalaryExport;
-
+use App\Models\FeePayment;
 
 
 
@@ -55,7 +55,7 @@ class SalaryController extends Controller
                     'companyId' => $companyId
                 ]);
             } catch (\Exception $e) {
-                dd($e->getMessage());
+                dd($e);
                 return redirect()->back()->with('error', 'There was an error uploading the file: ' . $e->getMessage())->withInput();
             }
         }
@@ -75,77 +75,95 @@ class SalaryController extends Controller
 
 
     public function verify(Request $request)
-{
-    // Start a database transaction
-    // dd($request->all());
-    $tempSalaries = TempMonthlySalary::all();
-    // dd($tempSalaries);
-    DB::beginTransaction();
-
-    try {
-        // Retrieve the temporary salaries
-        // $tempSalaries = TempMonthlySalary::where('company_id', $request->company_id)->get();
-
-        // Initialize an array to store the IDs of successfully inserted records
-        $insertedTempSalaryIds = [];
-
-        // Loop through the temp salaries and insert each into MonthlySalaryDetail
-        foreach ($tempSalaries as $tempSalary) {
-            MonthlySalaryDetail::create([
-                'employee_id' => intval($tempSalary->admin_id),
-                'company_id' => intval($tempSalary->company_id),
-                'year' => intval($tempSalary->year),
-                'month' => $tempSalary->month,
-                'working_days' => intval($tempSalary->working_days),
-                'basic' => intval($tempSalary->basic),
-                'pf_basic' => intval($tempSalary->pf_basic),
-                'hra' => intval($tempSalary->hra),
-                'conveyance' => intval($tempSalary->conveyance),
-                'other_allowance' => intval($tempSalary->other_allowance),
-                'basic_amount' => intval($tempSalary->basic_amount),
-                'pf_basic_amount' => intval($tempSalary->pf_basic_amount),
-                'hra_amount' => intval($tempSalary->hra_amount),
-                'conveyance_amount' => intval($tempSalary->conveyance_amount),
-                'other_allowance_amount' => intval($tempSalary->other_allowance_amount),
-                'total_amount' => intval($tempSalary->total_amount),
-                'epf_employee' => intval($tempSalary->epf_employee),
-                'epf_employer' => intval($tempSalary->epf_employer),
-                'eps_employer' => intval($tempSalary->eps_employer),
-                'esi_employee' => intval($tempSalary->esi_employee),
-                'esi_employer' => intval($tempSalary->esi_employer),
-                'psdt_amount' => intval($tempSalary->psdt_amount),
-                'tds_amount' => intval($tempSalary->tds_amount),
-                'lwf_employer' => intval($tempSalary->lwf_employer),
-                'lwf_employee' => intval($tempSalary->lwf_employee),
-                'other_if_any' => intval($tempSalary->other_if_any),
-                'total_deductions' => intval($tempSalary->total_deductions),
-                'net_payable' => intval($tempSalary->net_payable),
-                'advance' => intval($tempSalary->advance),
-            ]);
+    {
+        // Start a database transaction
+        DB::beginTransaction();
+    
+        try {
+            // Retrieve the temporary salaries for all companies
+            $tempSalaries = TempMonthlySalary::all();
+    
+            // Initialize an array to store the IDs of successfully inserted records
+            $insertedTempSalaryIds = [];
+    
+            // Group the temp salaries by company_id
+            $companies = $tempSalaries->groupBy('company_id');
+    
+            // Loop through each company and insert its monthly salary details
+            foreach ($companies as $company_id => $salaries) {
+                foreach ($salaries as $tempSalary) {
+                    MonthlySalaryDetail::create([
+                        'employee_id' => intval($tempSalary->admin_id),
+                        'company_id' => intval($tempSalary->company_id),
+                        'year' => intval($tempSalary->year),
+                        'month' => $tempSalary->month,
+                        'working_days' => intval($tempSalary->working_days),
+                        'basic' => intval($tempSalary->basic),
+                        'pf_basic' => intval($tempSalary->pf_basic),
+                        'hra' => intval($tempSalary->hra),
+                        'conveyance' => intval($tempSalary->conveyance),
+                        'other_allowance' => intval($tempSalary->other_allowance),
+                        'basic_amount' => intval($tempSalary->basic_amount),
+                        'pf_basic_amount' => intval($tempSalary->pf_basic_amount),
+                        'hra_amount' => intval($tempSalary->hra_amount),
+                        'conveyance_amount' => intval($tempSalary->conveyance_amount),
+                        'other_allowance_amount' => intval($tempSalary->other_allowance_amount),
+                        'rate_of_pay' => intval($tempSalary->rate_of_pay),
+                        'epf_employee' => intval($tempSalary->epf_employee),
+                        'epf_employer' => intval($tempSalary->epf_employer),
+                        'eps_employer' => intval($tempSalary->eps_employer),
+                        'esi_employee' => intval($tempSalary->esi_employee),
+                        'esi_employer' => intval($tempSalary->esi_employer),
+                        'psdt_amount' => intval($tempSalary->psdt_amount),
+                        'tds_amount' => intval($tempSalary->tds_amount),
+                        'lwf_employer' => intval($tempSalary->lwf_employer),
+                        'lwf_employee' => intval($tempSalary->lwf_employee),
+                        'other_if_any' => intval($tempSalary->other_if_any),
+                        'total_deductions' => intval($tempSalary->total_deductions),
+                        'net_payable' => intval($tempSalary->net_payable),
+                        'advance' => intval($tempSalary->advance),
+                    ]);
+    
+                    // Add inserted temp salary ID to the array
+                    $insertedTempSalaryIds[] = $tempSalary->id;
+                }
+    
+                // Retrieve the company's fee amount from the Company model
+                $company = Company::find($company_id);
+                // dd($company);
+                if ($company) {
+                    // Insert the fee payment for the company based on its temp salary details
+                    $fee=FeePayment::create([
+                        'company_id'   => $company_id,
+                        'month'        => $tempSalaries->firstWhere('company_id', $company_id)->month, // Use the month from the temp salary
+                        'year'         => $tempSalaries->firstWhere('company_id', $company_id)->year, // Use the year from the temp salary
+                        'fee_amount'   => $company->monthly_fees, // Use the fee amount from the Company model
+                        'payment_type' => 'fees', // Assuming the payment type is 'fee'
+                    ]);
+                    // dd($fee);
+                }
+            }
+    
+            // Commit the transaction if everything is successful
+            DB::commit();
+    
+            // Delete the temp salaries that have been processed
+            TempMonthlySalary::whereIn('id', $insertedTempSalaryIds)->delete();
+    
+            return redirect()->back()->with(['class' => 'success', 'message' => 'Employee Salary and Fee Payments uploaded successfully.']);
         
-            $insertedTempSalaryIds[] = $tempSalary->id;
+        } catch (\Exception $e) {
+            // Roll back the transaction in case of an error
+            DB::rollBack();
+            dd($e->getMessage());
+            // Log the error for debugging
+            \Log::error('Salary upload failed: '.$e->getMessage());
+    
+            // Return with an error message
+            return redirect()->back()->with(['class' => 'error', 'message' => 'Failed to upload employee salary and fee payments.']);
         }
-        
-
-       
-        DB::commit();
-
-        TempMonthlySalary::whereIn('id', $insertedTempSalaryIds)->delete();
-
-        return redirect()->back()->with(['class' => 'success', 'message' => 'Employee Salary uploaded successfully.']);
-
-    } catch (\Exception $e) {
-// dd($e->getMessage());
-
-        // If there's an error, roll back the transaction
-        DB::rollBack();
-        // Log the error for debugging
-        \Log::error('Salary upload failed: '.$e->getMessage());
-
-        // Return with an error message
-        return redirect()->back()->with(['class' => 'error', 'message' => 'Failed to upload employee salary.']);
     }
-}
+    
 
 
     public function cancel(){

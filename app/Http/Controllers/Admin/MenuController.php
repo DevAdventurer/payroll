@@ -46,9 +46,11 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        
+        $request->validate([
             'name' => 'required|unique:menus,slug',
             'status' => 'required',
+
         ]);
         $slug = Str::slug($request->name, '_');
         $menu = Menu::firstOrNew(['slug'=>$slug]);

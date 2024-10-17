@@ -56,7 +56,7 @@ class CompanyDtails extends Model
     }
     public function state()
     {
-        return $this->belongsTo(State::class, 'state', 'id');
+        return $this->belongsTo(State::class, 'state_id', 'id');
     }
 
     // District Relationship

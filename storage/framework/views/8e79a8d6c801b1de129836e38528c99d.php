@@ -57,7 +57,7 @@
                             <th>HRA</th>
                             <th>Conveyance</th>
                             <th>Other Allowance</th>
-                            <th>Total Amount</th>
+                            <th>Rate Of Pay</th>
                             <th>EPF (Employee)</th>
                             <th>EPF (Employer)</th>
                             <th>EPS (Employer)</th>
@@ -80,7 +80,7 @@
                             <td><?php echo e(number_format($detail->hra, 2)); ?></td>
                             <td><?php echo e(number_format($detail->conveyance, 2)); ?></td>
                             <td><?php echo e(number_format($detail->other_allowance, 2)); ?></td>
-                            <td><?php echo e(number_format($detail->total_amount, 2)); ?></td>
+                            <td><?php echo e(number_format($detail->rate_of_pay , 2)); ?></td>
                             <td><?php echo e(number_format($detail->epf_employee, 2)); ?></td>
                             <td><?php echo e(number_format($detail->epf_employer, 2)); ?></td>
                             <td><?php echo e(number_format($detail->eps_employer, 2)); ?></td>

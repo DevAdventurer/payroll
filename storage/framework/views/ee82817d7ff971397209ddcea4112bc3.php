@@ -57,17 +57,18 @@
                         
                             <tr>
                                 <th>Address</th>
-                                <td><?php echo e($adminDetail->address); ?></td>
+                                <td><?php echo e($adminDetail->address ?? 'N/A'); ?></td>
                                 <th>City</th>
-                                <td><?php echo e($adminDetail->city); ?></td>
+                                <td><?php echo e($city); ?></td>
                             </tr>
-                        
+                            
                             <tr>
                                 <th>District</th>
-                                <td><?php echo e($adminDetail->distt); ?></td>
+                                <td><?php echo e($district); ?></td>
                                 <th>State</th>
-                                <td><?php echo e($adminDetail->state); ?></td>
+                                <td><?php echo e($state); ?></td>
                             </tr>
+                            
                         
                             <tr>
                                 <th>GST No.</th>

@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\WagesController;
+use App\Http\Controllers\Admin\FeesContoller;
+use App\Http\Controllers\Admin\ServiceContoller;
 use App\Http\Controllers\Admin\SalaryController;
 use App\Http\Controllers\Admin\LWFController;
 use App\Http\Controllers\Admin\GratuityController;
@@ -136,6 +138,15 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('clients/change-status', 'changeStatus')->name('client.changeStatus')->middleware('can:change_status_client');
     });
 
+    // //lwf controller//
+    Route::controller(LWFController::class)->group(function(){
+        Route::get('lwf', 'index')->name('lwf.index')->middleware('can:browse_lwf');
+        Route::get('lwf/create', 'create')->name('lwf.create')->middleware('can:add_lwf');
+        Route::get('lwf/{slug}/edit', 'edit')->name('lwf.edit')->middleware('can:edit_lwf');
+        Route::put('lwf/{lwf}/update', 'update')->name('lwf.update')->middleware('can:edit_lwf');
+        Route::delete('lwf/{slug}/delete', 'destroy')->name('lwf.destroy')->middleware('can:delete_lwf');
+        Route::post('lwf', 'store')->name('lwf.store')->middleware('can:add_lwf');
+    });
 
    //Company
     Route::controller(CompanyController::class)->group(function(){
@@ -151,6 +162,32 @@ Route::middleware('admin.auth')->group(function() {
         Route::put('company/change-status', 'changeStatus')->name('company.changeStatus')->middleware('can:change_status_company');
         Route::post('company/verify', 'verifyInsert')->name('company.verify')->middleware('can:add_company');
     });
+    //Fees
+    Route::controller(FeesContoller::class)->group(function(){
+        Route::match(['get','patch'],'fees', 'index')->name('fees.index')->middleware('can:browse_fees');
+        Route::get('fees/create', 'create')->name('fees.create')->middleware('can:add_fees');
+     
+        Route::get('fees/{fees}', 'show')->name('fees.show')->middleware('can:read_fees');
+        Route::get('fees/{fees}/edit', 'edit')->name('fees.edit')->middleware('can:edit_fees');
+        Route::post('fees', 'store')->name('fees.store')->middleware('can:add_fees');
+        Route::put('fees/{fees}', 'update')->name('fees.update')->middleware('can:edit_fees');
+        Route::delete('fees/{fees}/delete', 'destroy')->name('fees.destroy')->middleware('can:delete_fees');
+        Route::put('fees/change-status', 'changeStatus')->name('fees.changeStatus')->middleware('can:change_status_fees');
+       
+    });
+        //services
+        Route::controller(ServiceContoller::class)->group(function(){
+            Route::match(['get','patch'],'services', 'index')->name('services.index')->middleware('can:browse_services');
+            Route::get('services/create', 'create')->name('services.create')->middleware('can:add_services');
+         
+            Route::get('services/{services}', 'show')->name('services.show')->middleware('can:read_services');
+            Route::get('services/{services}/edit', 'edit')->name('services.edit')->middleware('can:edit_services');
+            Route::post('services', 'store')->name('services.store')->middleware('can:add_services');
+            Route::put('services/{services}', 'update')->name('services.update')->middleware('can:edit_services');
+            Route::delete('services/{services}/delete', 'destroy')->name('services.destroy')->middleware('can:delete_services');
+            Route::put('services/change-status', 'changeStatus')->name('services.changeStatus')->middleware('can:change_status_services');
+           
+        });
     //Salary
     Route::controller(SalaryController::class)->group(function(){
         Route::match(['get','patch'],'salary', 'index')->name('salary.index')->middleware('can:browse_salary');

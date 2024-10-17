@@ -31,7 +31,7 @@ class MonthlySalaryDetail extends Model
         'hra_amount',
         'conveyance_amount',
         'other_allowance_amount',
-        'total_amount',
+        'rate_of_pay',
         'epf_employee',
         'epf_employer',
         'eps_employer',
@@ -49,5 +49,9 @@ class MonthlySalaryDetail extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class,'employee_id','id');
+    }
+    public function employeedetails()
+    {
+        return $this->belongsTo(EmployeeDetails::class, 'employee_id', 'admin_id');
     }
 }

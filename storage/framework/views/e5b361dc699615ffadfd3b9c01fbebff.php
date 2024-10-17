@@ -439,7 +439,58 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                                         </div>
-                
+                <hr>
+                <!-- New Field: Select Multiple Services -->
+                <div class="row mb-3">
+                    <div class="col-md-6 form-group">
+                        <?php echo e(html()->label('Select Services')->for('services')); ?>
+
+<?php echo e(html()->select('services[]', $services->pluck('name', 'id')->toArray(), $company->services)
+    ->class('form-control select2 js-example-basic-multiple-limit')
+    ->required()
+    ->multiple()); ?>
+
+
+                        <?php $__errorArgs = ['services'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+<script>
+$(".js-example-basic-multiple-limit").select2({
+placeholder: "Select Services",
+allowClear: true
+});
+</script>
+                    <!-- New Field: Monthly Charges -->
+                    <div class="col-md-6 form-group">
+                        <?php echo e(html()->label('Monthly Charges (₹)')->for('monthly_charges')); ?><span class="text-danger">*</span>
+                        <?php echo e(html()->number('monthly_charges')
+                            ->class('form-control')
+                            ->required()
+                            ->placeholder('Enter monthly charges')
+                            ->value(old('monthly_charges', $company->monthly_fees ?? ''))
+                            ->attribute('min', 1)); ?>
+
+                        <?php $__errorArgs = ['monthly_charges'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                   
+                </div>
                                         <div class="col-md-6 mb-3 form-group">
                                             <?php echo e(html()->submit('Update Company')->class('btn btn-soft-secondary waves-effect waves-light')); ?>
 

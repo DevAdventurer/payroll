@@ -10,7 +10,7 @@ class Company extends Model
     use HasFactory;
     protected $table='admins'; 
     protected $fillable = [
-        'name', 'email', 'password','role_id','mobile','entity_type'
+        'name', 'email', 'password','role_id','mobile','entity_type','monthly_fees','services'
     ];
     protected static function boot()
     {
@@ -29,6 +29,10 @@ class Company extends Model
     public function employees()
     {
         return $this->hasMany(Employee::class, 'company_id', 'id');
+    }
+    public function services()
+    {
+        return $this->hasMany(Services::class, 'id', 'services'); // Assuming 'id' in Service corresponds to values in services array
     }
     public function scopeCompanies($query)
     {

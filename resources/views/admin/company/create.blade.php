@@ -242,9 +242,45 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3 form-group">
-                                {{ html()->submit('Save')->class('btn btn-primary') }}
+                          
+                        </div>
+                        <hr>
+                         <!-- New Field: Select Multiple Services -->
+                         <div class="row mb-3">
+                            <div class="col-md-6 form-group">
+                                {{ html()->label('Select Services')->for('services') }}
+                                {{ html()->select('services[]', $services->pluck('name', 'id')->toArray())
+                                    ->class('form-control select2 js-example-basic-multiple-limit')
+                                    ->required()
+                                    ->multiple()
+                                    }}
+                                @error('services')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+<script>
+    $(".js-example-basic-multiple-limit").select2({
+    placeholder: "Select Services",
+    allowClear: true
+});
+</script>
+                            <!-- New Field: Monthly Charges -->
+                            <div class="col-md-6 form-group">
+                                {{ html()->label('Monthly Charges (₹)')->for('monthly_charges') }}<span class="text-danger">*</span>
+                                {{ html()->number('monthly_charges')
+                                    ->class('form-control')
+                                    ->required()
+                                    ->placeholder('Enter monthly charges')
+                                    ->value(old('monthly_charges'))
+                                    ->attribute('min', 1) }}
+                                @error('monthly_charges')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                           
+                        </div>
+                        <div class="col-md-6 mb-3 form-group">
+                            {{ html()->submit('Save')->class('btn btn-primary') }}
                         </div>
                     </div>
                 </div>

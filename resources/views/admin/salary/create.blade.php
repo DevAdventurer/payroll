@@ -150,7 +150,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Working Days</th>
-                                <th>Total Amount</th>
+                                <th>Rate of pay</th>
                                 <th>Total Deduction</th>
                                 <th>Total Payable</th>
                                 <th>Action</th>
@@ -162,7 +162,7 @@
                                     <td>{{ $salary->employee->name }}</td>
                                     <td>{{ $salary->employee->email }}</td>
                                     <td>{{ $salary->working_days }}</td>
-                                    <td>{{ $salary->total_amount }}</td>
+                                    <td>{{ $salary->rate_of_pay }}</td>
                                     <td>{{ $salary->total_deductions }}</td>
                                     <td>{{ $salary->net_payable }}</td>
                                     <td>
@@ -260,7 +260,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Working Days</th>
-                                                    <th>Total Amount</th>
+                                                    <th>Rate of Pay</th>
                                                     <th>Total Deductions</th>
                                                     <th>Net Payable</th>
                                                 </tr>
@@ -268,7 +268,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>${employee.working_days}</td>
-                                                    <td>${employee.total_amount}</td>
+                                                    <td>${employee.rate_of_pay}</td>
                                                     <td>${employee.total_deductions}</td>
                                                     <td>${employee.net_payable}</td>
                                                 </tr>

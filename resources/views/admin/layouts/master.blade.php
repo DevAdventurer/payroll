@@ -23,11 +23,13 @@
    
     <link href="{{asset('admin-assets/libs/sweetalert/sweetalert.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{asset('admin-assets/libs/dropzone/dropzone.css')}}" rel="stylesheet" type="text/css" />
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" ></script> --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
     <!--datatable responsive css-->
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
-    
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     
      <link href="{{asset('admin-assets/css/app.min.css')}}" rel="stylesheet" type="text/css" />
@@ -35,11 +37,16 @@
     <link href="{{asset('admin-assets/css/custom.min.css')}}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{asset('admin-assets/libs/glightbox/css/glightbox.min.css')}}">
+   
     <style>
         .alert {
             display: none;
         }
     </style>
+     {{-- <link rel="stylesheet" href="{{url('css/mdb.min.css')}}" /> --}}
+     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 
 <body>
@@ -101,7 +108,7 @@
     <!-- Theme Settings -->
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{--  --}}
     <!-- JAVASCRIPT -->
     <script src="{{asset('admin-assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('admin-assets/libs/simplebar/simplebar.min.js')}}"></script>
@@ -112,7 +119,7 @@
     <script src="{{asset('admin-assets/libs/dropzone/dropzone-min.js')}}"></script>
     <script src="{{asset('admin-assets/js/custom.js')}}"></script>
     <script src="{{asset('admin-assets/js/media.js')}}"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+   
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -325,5 +332,6 @@ function cancelData(url,data={},callback=null){
             }
         }));
 </script>
+{{-- <script type="text/javascript" src="{{url('js/mdb.umd.min.js')}}"></script> --}}
 </body>
 </html>

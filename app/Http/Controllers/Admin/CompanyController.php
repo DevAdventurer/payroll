@@ -11,7 +11,7 @@ use App\Models\City;
 use App\Models\District;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-
+use App\Models\Services;
 use App\Models\Company;
 use App\Http\Resources\Admin\Company\CompanyCollection;
 use App\Imports\CompanyImport;
@@ -58,7 +58,8 @@ class CompanyController extends Controller
         // dd($roles);
         $state=State::all();
         // dd($state);
-        return view('admin.company.create', compact('roles','state'));
+        $services=Services::where('status','active')->get();
+        return view('admin.company.create', compact('roles','state','services'));
     }
 
     /**
@@ -66,6 +67,7 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
 {
+    // dd($request->all());
     // Validate the request data
     $validatedData = $request->validate([
         'company_name' => 'required|string|max:255|unique:admins,name',
@@ -135,6 +137,8 @@ class CompanyController extends Controller
         'bank_name' => 'required|string|max:255|required',
         'ac_no' => 'required|string|max:255|required',
         'ifs_code' => 'required|string|max:255|required',
+        'services'=>'required',
+        'monthly_charges'=>'required',
     ]);
     // dd($validatedData);
     DB::beginTransaction();
@@ -145,6 +149,8 @@ class CompanyController extends Controller
         $admin->name = $request->input('company_name');
         $admin->email = $request->input('email');
         $admin->mobile = $request->input('contact_no');
+        $admin->services=json_encode($request->services);
+        $admin->monthly_fees=$request->monthly_charges;
         $admin->save();
         // Create company details
         $adminDetail = new CompanyDtails();
@@ -183,7 +189,15 @@ class CompanyController extends Controller
     {
         $admin = Company::findOrFail($id);
     $adminDetail = CompanyDtails::where('admin_id', $admin->id)->first();
-    return view('admin.company.view',compact('admin', 'adminDetail'));
+    $state=State::find($adminDetail->state_id);
+    $state=$state->state_title;
+
+    $district=District::find($adminDetail->district_id);
+    $district=$district->district_title;
+
+    $city=City::find($adminDetail->city_id);
+    $city=$city->name;
+    return view('admin.company.view',compact('admin', 'adminDetail','state','district','city'));
     }
 
     /**
@@ -198,8 +212,9 @@ class CompanyController extends Controller
                 //    dd($city);
 
                    $district = District::pluck('district_title', 'id')->toArray(); 
-                //    dd($company);
-        return view('admin.company.edit',compact('company','states','city','district'));
+                //    dd($company->services);
+                $services=Services::where('status','active')->get();
+        return view('admin.company.edit',compact('company','states','city','district','services'));
     }
 
     /**
@@ -275,6 +290,8 @@ class CompanyController extends Controller
         'bank_name' => 'required|string|max:255',
         'ac_no' => 'required|string|max:255',
         'ifs_code' => 'required|string|max:255',
+        'services'=>'required',
+        'monthly_charges'=>'required',
     ]);
     DB::beginTransaction();
 
@@ -284,6 +301,8 @@ class CompanyController extends Controller
         $admin->name = $request->input('company_name');
         $admin->email = $request->input('email');
         $admin->mobile = $request->input('contact_no');
+        $admin->services=json_encode($request->services);
+        $admin->monthly_fees=$request->monthly_charges;
         $admin->save();
 
         // Update company details

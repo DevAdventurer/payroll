@@ -189,7 +189,7 @@ unset($__errorArgs, $__bag); ?>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Working Days</th>
-                                <th>Total Amount</th>
+                                <th>Rate of pay</th>
                                 <th>Total Deduction</th>
                                 <th>Total Payable</th>
                                 <th>Action</th>
@@ -201,7 +201,7 @@ unset($__errorArgs, $__bag); ?>
                                     <td><?php echo e($salary->employee->name); ?></td>
                                     <td><?php echo e($salary->employee->email); ?></td>
                                     <td><?php echo e($salary->working_days); ?></td>
-                                    <td><?php echo e($salary->total_amount); ?></td>
+                                    <td><?php echo e($salary->rate_of_pay); ?></td>
                                     <td><?php echo e($salary->total_deductions); ?></td>
                                     <td><?php echo e($salary->net_payable); ?></td>
                                     <td>
@@ -299,7 +299,7 @@ unset($__errorArgs, $__bag); ?>
                                             <thead>
                                                 <tr>
                                                     <th>Working Days</th>
-                                                    <th>Total Amount</th>
+                                                    <th>Rate of Pay</th>
                                                     <th>Total Deductions</th>
                                                     <th>Net Payable</th>
                                                 </tr>
@@ -307,7 +307,7 @@ unset($__errorArgs, $__bag); ?>
                                             <tbody>
                                                 <tr>
                                                     <td>${employee.working_days}</td>
-                                                    <td>${employee.total_amount}</td>
+                                                    <td>${employee.rate_of_pay}</td>
                                                     <td>${employee.total_deductions}</td>
                                                     <td>${employee.net_payable}</td>
                                                 </tr>

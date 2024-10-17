@@ -1,59 +1,63 @@
 @extends('admin.layouts.master')
+
 @push('links')
 @endpush
+
 @section('main')
-
 <div class="content-header row">
-
     <div class="content-header-left col-md-6 col-12 mb-2">
-      <h5 class="content-header-title mb-0">Create Menu</h5>
+        <h5 class="content-header-title mb-0">Create Menu</h5>
     </div>
 
     <div class="content-header-right col-md-6 col-12">
-      <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
-        <div class="btn-group" role="group">
-            @can('add_menu')
-                <a href="{{ route('admin.menu.create') }}" class="btn btn-primary btn-sm">Add Menu</a>
-            @endcan
-       </div>
+        <div class="btn-group float-md-right" role="group" aria-label="Button group with nested dropdown">
+            <div class="btn-group" role="group">
+                @can('add_menu')
+                    <a href="{{ route('admin.menu.create') }}" class="btn btn-primary btn-sm">Add Menu</a>
+                @endcan
+            </div>
+        </div>
     </div>
-</div>
 </div>
 
 <div class="card">
     <div class="card-content">
         <div class="card-body">
-           {!! Form::open(['route'=>'admin.menu.store']) !!}
-                        <div class="form-group">
-                            {!! Form::label('name', 'Menu Name', ['class'=>'control-label']) !!}
-                        {!! Form::text('name', null, ['class'=>'form-control']) !!}
-                        <b class="text-danger">{{$errors->first('name')}}</b>
-                        </div>
+            {{ html()->form('POST', route('admin.'.request()->segment(2).'.store'))->class('form-horizontal')->open() }}
 
+            <div class="form-group">
+                {{ html()->label('Menu Name')->for('name')->class('control-label') }}
+                {{ html()->text('name')->class('form-control')->required()->placeholder('Enter Menu Name')->value(old('name')) }}
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-                        <div class="form-group">
-                            {!! Form::label('icon', 'Icon', ['class'=>'control-label']) !!}
-                            {!! Form::text('icon', null, ['class'=>'form-control']) !!}
-                            <b class="text-danger">{{$errors->first('icon')}}</b>
-                        </div>
+            <div class="form-group">
+                {{ html()->label('Icon')->for('icon')->class('control-label') }}
+                {{ html()->text('icon')->class('form-control')->required()->placeholder('Enter Icon')->value(old('icon')) }}
+                @error('icon')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-                        <div class="form-group">
-                            {!! Form::label('status', 'Status', ['class'=>'control-label']) !!}
-                        {!! Form::select('status', array(1 => 'Active', '0' => 'Deactive'), null, array('class' => 'form-control','id'=>'menu_status')); !!}
-                        <b class="text-danger">{{$errors->first('status')}}</b>
-                        </div>                       
-                    
-                    <div class="form-group">
-                        <button style=" margin-right: 14px;padding: 7px;width: 71px;background: #dcd7d7;" class="btn btn-success">Create</button>
-                    </div>
-                {!! Form::close() !!}
+            <div class="form-group">
+                {{ html()->label('Status')->for('status')->class('control-label') }}
+                {{ html()->select('status', [1 => 'Active', 0 => 'Deactive'])->class('form-control')->id('menu_status')->value(old('status')) }}
+                @error('status')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
+            <div class="form-group">
+                {{ html()->submit('Create')->class('btn btn-primary') }}
+            </div>
+
+            {{ html()->form()->close() }}
         </div>
-             
     </div>
 </div>
 @endsection
+
 @push('scripts')
-
-
 @endpush
